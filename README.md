@@ -36,21 +36,26 @@ In this repo, you will find superWrapperSource folder (Needed for Step 4, 5 & 6)
 
 Step 4:
 From this folder copy these files 
-        ` controller.js, 
-          controllerNoIE.js, 
+         
+          controller.js
+          controllerNoIE.js 
           tincan.js
           
           Place in the captivate publish folder assets/js folder.
           
 Step5:
 
-In the index.html or index_scorm.html page that is published by captivate you need to add the changes reflect in superWrapper Source folder> index.html
+In the index.html or index_scorm.html page that is published by captivate:
 
-Lines 15 - 33 must be added (these are all new things, so they just need to be pasted in)
+        Add the changes reflect in superWrapper Source folder> indexSource.html
+        Lines 15 - 33 must be added (these are all new things, so they just need to be pasted in)
 
 Step 6:
-Lines 128 - 137 change one line from the publish package, the original line (132) is commented out in this example and its replacement line is added line 133
 
+        Find this line in index.html:
+            var lJSFiles = [  'assets/js/jquery-1.11.3.min.js','assets/js/CPM.js' ];
+            
+            Replace with Lines 128 - 137 from superwrapper source folder>indexSource.html
 Step 7:
 
     -Scorm only - zip package from inside folder for lms payload
