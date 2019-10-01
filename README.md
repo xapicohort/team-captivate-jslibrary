@@ -27,16 +27,25 @@ In captivate variables you also have to set up these variables for you LRS
 
 In this repo, you will find superWrapperSource folder:
 
-Step 3:
+Step 3:Publish the captvate following these parameters
+        - HTML only
+        - Unzipped
+        - Scorm or No Scorm is OK
+
+Step 4:
   From this folder copy controller.js, controllerNoIE.js, and tincan.js and place in the captivate publish folder assets/js
 
-Step4:
+Step5:
 In the index.html page that is published by captivate you need to add the changes reflect in superWrapper Source folder> index.html
 
 Lines 15 - 33 must be added (these are all new things, so they just need to be pasted in)
 
-Step 5:
+Step 6:
 Lines 128 - 137 change one line from the publish package, the original line (132) is commented out in this example and its replacement line is added line 133
+
+Step 7:
+    Scorm only - zip package from inside folder for lms payload
+    Server - Deploy website
 
 
 
