@@ -3,7 +3,7 @@
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 const customVerbPrefix="http://id.superwrapper.com/verb/";
-console.log('Captivate Wrapper v3.2 Superwrapper')
+console.log('Captivate Wrapper v3.4 Superwrapper')
 const params = {
     "environment":"production",
     "reportingToLrs":true,
