@@ -2,6 +2,7 @@
       
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
+//NOTE:Quiz results are very experimental, still a work in progress
 console.log('SuperWrapper v1.0');
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
@@ -19,7 +20,6 @@ const params = {
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
                 pressClickBox:[true, 'clicked box'],
                 experience:[false, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
-
             "quiz":
             {
                 start:[true,'started','http://activitystrea.ms/schema/1.0/start'],
@@ -28,7 +28,6 @@ const params = {
                 review:[true,'reviewed','https://brindlewaye.com/xAPITerms/verbs/reviewed/'],
                 finish:[true,'completed','http://activitystrea.ms/schema/1.0/complete']
             },
-            
             "video":
             {
                 play:[true,'played','http://activitystrea.ms/schema/1.0/play'],
@@ -37,7 +36,7 @@ const params = {
                 mute:[true,'scrubbed', `${customVerbPrefix}muted`],
                 unmute:[true,'scrubbed', `${customVerbPrefix}unmuted`],
                 adjustVolume:[true,'adjusted volume',`${customVerbPrefix}adjustVolume`],
-                watch: ['false','watched','http://activitystrea.ms/schema/1.0/watch']
+                watch: [false,'watched','http://activitystrea.ms/schema/1.0/watch']
             },
         },
     "consoleLog":{
@@ -47,11 +46,11 @@ const params = {
                 videoLog:true,
                 eventListener:false
     },
-    "quiz_name":null,
+    "quizName":null,
+    "quizId":null,//uses baseID-ActivityName
     "remove_play_button_on_mobile":true,
-    "quiz_id":null,//uses baseID-ActivityName
     "parentName":null,
-    "baseId":null,//uses base URL and path by default to define URI
+    "baseId":null,//uses base URL and path by default but can be defined to custom URI
     "returnToLastSlideVisited":true,//TODO:write query to check last slide visited
     "sw_reloadWebObject":"Prefacing a clickbox or button with this title will force a refresh of all active iFrames",
     "xapi_":"Prefacing a button or clickbox with this title will track button interactions"
@@ -59,14 +58,11 @@ const params = {
 //TODO:put it regex check for valid IRI for all passed paramter ID's, set to null if invlaid so it defaults
 let xApiController,user,sw,quiz;
 function init(){
-   
     //if statement is if user returns to slide and init is called again, but the xApiController object
     //is already created it will not try to create a 2nd option
     if(typeof xApiController !=="object"){
-    
     //set up the superWrapper object
     sw = new SuperWrapper();
-  
     user = new Learner();
     user.init(()=>{
         xApiController = new XAPIController();
@@ -79,11 +75,8 @@ function init(){
         xApiController.launchFlag =true;
         //adds 2 event listeners, one is for any interaction with the DOM 
         //the second is listening for slide change event
-        xApiController.cpListeners();
-        
-        });
-
-
+        xApiController.cpListeners(); 
+     });
 };
 };
 class XAPIController{
@@ -155,10 +148,7 @@ constructor(store){
                 });
                 console.log('%c LRS endpoint:','color:#90ee90',lrs.endpoint,)
                 return lrs;
-            } catch (ex) {
-                console.log("Failed to setup LRS object: " + ex);
-                
-        }
+            } catch (ex) {console.log("Failed to setup LRS object: " + ex); }
         })();
         }else(console.log('%c Reporting OFF - no LRS set up for this session','color:orange'))
         this.ie=(()=>{
@@ -190,7 +180,6 @@ constructor(store){
         this.verbName=this.verb[verb];
         //first if is for access verb, since access happens when project is opened access is not passed into 
         //definestmt like it is for all other instances
-    
         if (arguments[0]===null  && arguments.length==1){
             this.verbName =this.verb.access;
             this.verbId=this.verb.accessId;
@@ -271,13 +260,11 @@ constructor(store){
         //only passes a type for quiz defnitions see class Defintions for all the types
       
         if(arguments[0] != null  && this.verbName !=='completed' ){
-            console.log('redefine')
+         
             let definitions = new Definitions();
             return definitions.returnDefinition(sw.insert_(type));
         } else{
-            console.log('underredefine')
         return new TinCan.Activity({
-        
             definition : {
                 "name":{[params.display_en_lang[0]]:sw.remove_(this.activity)},
                 "description":{[params.display_en_lang[0]]:`${sw.remove_(this.activityDescription)}`},
@@ -296,8 +283,6 @@ constructor(store){
         });
     };
     createContext(){
-       
-        
         let endingPoint,startingPoint;
         if(this.verbName ===this.verb.scrub) endingPoint =`PT${Math.round(this.newTime)}S`;
         else if (this.verbName ===this.verb.adjust) {
@@ -307,7 +292,6 @@ constructor(store){
         if(this.verbName === this.verb.adjust)startingPoint = `${Number(this.pauseTime).toFixed(2)}`;
         else startingPoint = `PT${Math.round(this.pauseTime)}S`;
         return new TinCan.Context(
-
             {
                 "registration":this.registrationId,
                 "revision":this.revision,
@@ -334,8 +318,6 @@ constructor(store){
                 }
             
         }
-  
-     
         });
     };
     createContextActivities(){
@@ -388,7 +370,6 @@ constructor(store){
     };
    
         createResult(quizType){
-    
         if (!quizType)return new TinCan.Result({
             duration:this.totalDurationTime
         })
@@ -419,8 +400,6 @@ constructor(store){
         this.stmt.context.platform =navigator.platform;
         const clearCtx =['groupId','groupName','groupName','categoryId','categoryName'];//reset context for next activity
         clearCtx.map(ctxt=>this[ctxt]=null);
-    
-      
     };
     prepareStmtToSend(){
         //console.log(this.verbName)
@@ -550,10 +529,8 @@ constructor(store){
             this.video=null;
             //sw.typeText();
             this.quizhandler(e);
-          
             if(sw.var('cpInQuizScope')==0){this.quizStarted = false}
             if(sw.var('cpInQuizScope')==true  && !this.quizStarted){
-          
                 if(quiz.question ===null){
                     if(params.verbs.quiz.start)this.defineStmt(quiz.quizName,'start');
                     this.quizStarted = true;
@@ -635,19 +612,12 @@ constructor(store){
 
                 }
                  });
-                 
-
             window.cpAPIEventEmitter.addEventListener('CPAPI_QUESTIONSUBMIT',e=>{
                 this.quizhandler(e) 
                 console.log(quiz)
                 if(quiz.correct===true){
-
                     this.defineStmt(quiz.Name,'finish')
-
-
                 }
-           
-                
                 if(params.verbs.quiz.answer){
                     this.defineStmt(quiz.question,'answer');
                 }
@@ -657,7 +627,6 @@ constructor(store){
                 if(params.verbs.quiz.skip)this.defineStmt(this.slides[this.slides.length-1],'skip')
             })
             window.cpAPIEventEmitter.addEventListener('CPAPI_VARIABLEVALUECHANGED','v_increment',e=>{
-              
             });
       
     };
@@ -680,8 +649,7 @@ constructor(store){
                     }
                   },1000)
                    
-            });
-                
+            });       
     };
     quizhandler(data){
      quiz = new Quiz(data);   
@@ -700,23 +668,23 @@ class SuperWrapper{
             return `Variable ${variable} set to ${value}`;
         };
         this.verbId ='http://id.superwrapper.com/verb/';//TODO:add validaton
-    }
+    };
     jump(slide){
         this.capSetVarValue('cpCmndGotoSlide',slide);
         //console.log(slide)
-    }
+    };
     next(){
         window.cpAPIInterface.next();
-    }
+    };
     play(){
         cp.movie.play();
-    }
+    };
     var(value){
        return this.capGetVarValue(value)
-    }
+    };
     reloadWebObject(){
         $('iframe').attr('src', $('iframe').attr('src'));
-    }
+    };
     convertMilliSecondsToISO(millis){
         
         let minutes = Math.floor(millis / 60000);
@@ -744,8 +712,6 @@ class SuperWrapper{
                 }
            
     };
-
-    
     insert_(input){//helperfunction replace spaces with _underscore_
         if(input.indexOf(' '))
         return (input.indexOf(' ') >0) ? input.split(' ').join('_'):input;
@@ -753,10 +719,8 @@ class SuperWrapper{
         return (input.indexOf('-') >0) ? input.split('-').join('_'):input;
     };
     remove_(input){
-        
         return (input.indexOf('_') > 0) ? input.split('_').join(' '):input;
     };
-
     uriCheck(uri){
         //console.log(uri)
         let validUri = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
@@ -765,19 +729,14 @@ class SuperWrapper{
         if(valid)return uri
         else return null;
     };
- 
     checkLoad(element,callback){//helper fucntion to wait for element to load before taking action
-        console.log(element)
         const elementInterval = setInterval(checkElement, 500, callback)
-    
-        function checkElement(callback){
-            
+        function checkElement(callback){   
         if($(element).length > 0){
             clearInterval(elementInterval);
             callback();
         }
     };
-   
     };
     typeText(){
         if($('span.cp-actualText').text() !=""){
@@ -798,16 +757,13 @@ class SuperWrapper{
             },250)
            };
     };
-
     openWebsite(email){
+        //TODO:refine these optioni
          location.href = `mailto:${email}?subject=Brian%20Floyd's%20Resume`;
     };
     callWebsite(url,description){//helper function to manually call website for param passing
         let appendEmailParam ="";
         let urlTest =url.substr(0,9);
-    // if(urlTest === 'https://ipk'||
-    //    urlTest===`http://tr`    ||
-    //    urlTest ===`https://t`) 
        appendEmailParam = `?mailto=${xApiController.actorEmail}`;
         xApiController.activityId =url;
         xApiController.createStmt(description);
@@ -816,14 +772,10 @@ class SuperWrapper{
     updateTitle(parentName){
         $('title').text(parentName);
     };
-
     toggleGeture(bool){
         if(typeof bool ==='boolean')cp.m_gestureHandler.enabled = bool;
         else return;
     };
-
-   
-
 };
 class VideoObject{
     constructor(vidObj){
@@ -844,9 +796,7 @@ class VideoObject{
         $(`#btmControl${this.name}`).on('mousedown', ()=>{
              this.getStartTime= this.video.currentTime; 
         })
-    
         this.listener = $(`#btmControl${this.name}`).on(xApiController.eventBinder,e=>{
-          
                 let playbarAction = ($(e.target)[0].innerText);
                 let playbar;
                 (playbarAction.indexOf(',')> -1)? playbar = playbarAction.split(",")[0]:playbar = playbarAction;
@@ -990,7 +940,6 @@ class Learner{
             return theAPI;
         };
      loginScreen(callback){
-       
         sw.checkLoad('.cpMainContainer',()=>{
                  $('.cpMainContainer').hide();
                  $(`<div class ="login-screen">`)
@@ -1031,7 +980,6 @@ class Learner{
                 focus()
                 //event listener for enter
                 .on("keyup", e=>{
-                   
                     if(e.which ===13 || e.code===13){
                         let email = $(e.target).val()
                         let valid = user.testEmail(email);
@@ -1061,8 +1009,7 @@ class Learner{
                     "min-height":"30px",
                     "border-radius":"5px",
                     "box-shadow": "2px 2px #888888",
-                    "transform":"translate(-50%,0%)",
-
+                    "transform":"translate(-50%,0%)"
                 })
                 $('#skip').hover($(this).css({
                     "background-color":"#EE7600",
@@ -1082,7 +1029,6 @@ class Learner{
                     "font-family":"arial",
                     "font-size":"80%"
                 });
-
         });
 }};
 class Verbs{
@@ -1133,14 +1079,14 @@ class Verbs{
 //define activity types
 class Types{
     constructor(){
-        this.slide = 'http://id.tincanapi.com/activitytype/slide';
+        this.slide ='http://id.tincanapi.com/activitytype/slide';
         this.page="http://activitystrea.ms/schema/1.0/page";
         this.category="http://id.tincanapi.com/activitytype/category";
         this.subcategory ="http://id.tincanapi.com/activitytype/subcategory"
         this.group="http://activitystrea.ms/schema/1.0/group";
         this.buttonGroup = "http://superwrapper/group/buttongroup";
         this.video="http://activitystrea.ms/schema/1.0/video";
-        this.pdf ="http://activitystrea.ms/schema/1.0/pdf";
+        this.pdf="http://activitystrea.ms/schema/1.0/pdf";
         this.source=`http://activitystrea.ms/schema/1.0/source`;
         this.course=`http://adlnet.gov/expapi/activities/course`;
         this.interaction ='http://adlnet.gov/expapi/activities/interaction';
@@ -1151,19 +1097,16 @@ class Types{
 class Quiz{
     constructor(data){
         this.possibleAnswers = [];
-        this.quizName =params.quiz_name || xApiController.parentName + " Quiz";
-        this.quizId = params.quiz_id || xApiController.parentId;
+        this.quizName=params.quizName || xApiController.parentName + " Quiz";
+        this.quizId=params.quizId || xApiController.parentId;
         this.questionType = sw.var('cpQuizInfoQuestionSlideType');
         this.totalquestions =sw.var('cpQuizInfoTotalQuestionsPerProject');
         this.questionId=data.cpData.interactionID;
         this.question=null;
         //this.questionNumber =data.cpdata.questionNumber+1||null;
         let labels = $('[id^=si]');
-    
         let textArray=[];
         labels.filter(label=>{
-            
-        
          if($(labels[label]).text()!='') {
           if($(labels[label]).text() == '<< ' ||
           $(labels[label]).text() == '>> '||
@@ -1204,12 +1147,9 @@ class Quiz{
                 })(); 
             } 
             else if(this.questionType==='matching'){
-       
                 this.question = textArray[3];
-  
                 let parse = textArray.slice(3,textArray.indexOf('Submit '))
                 //TODO:rewrite result cleaner
-               
                 let result = parse.filter(check=> (check.indexOf('A)')))
                                   .filter(check=>check !=" ")
                                   .filter(check=>check.indexOf('1.'))
@@ -1232,7 +1172,6 @@ class Quiz{
 };
 class Definitions{
 constructor(){
-    
     this.choice =  new TinCan.Activity({definition: {
         "name":{[params.display_en_lang[0]]:xApiController.activity},
             "description": {
@@ -1273,7 +1212,8 @@ constructor(){
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "true-false",
             "correctResponsesPattern": [quiz.correctAnswer]
-        }
+        },
+        id:xApiController.activityId
     });
     this.long_fill_in= new TinCan.Activity({"definition": {
             "description": {
@@ -1291,7 +1231,8 @@ constructor(){
                     } else return quiz.correctAnswer;
                 })()
             ]
-    }
+    },
+    id:xApiController.activityId
 });
 
     this.matching = (()=>{let def = new TinCan.Activity({"definition": {
@@ -1362,7 +1303,8 @@ return def;
                 })()
             ]
         
-    }
+    },
+    id:xApiController.activityId
 });
     this.sequencing = new TinCan.ActivityDefinition({"definition": {
             "description": {
@@ -1392,7 +1334,8 @@ return def;
                   
                 return answers
         })() 
-    }
+    },
+    id:xApiController.activityId
 });
     this.likert= new TinCan.ActivityDefinition({"definition": {
             "description": {
@@ -1416,7 +1359,8 @@ return def;
                     return answers
             })()
             ]
-        }
+        },
+        id:xApiController.activityId
     });
     this.hotspot= new TinCan.ActivityDefinition({"definition": {
             "description": {
@@ -1446,16 +1390,13 @@ return def;
                         answers.push(tempAnswer)})
                     return answers
             })()
-        }
+        },
+        id:xApiController.activityId
     }) ;
 }
-
 returnDefinition(type){
-
-   
     return this[type];
 };
-
 };
 
 
