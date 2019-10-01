@@ -32,7 +32,7 @@ Step 3:Publish the captivate following these parameters
         - Unzipped
         - Scorm or No Scorm is OK
         
-In this repo, you will find superWrapperSource folder (Needed for Step 4, 5 & 6):
+Copy this repo (use the clone button), you will find superWrapperSource folder (Needed for Step 4, 5 & 6):
 
 Step 4:
 From this folder copy these files 
