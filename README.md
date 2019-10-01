@@ -18,9 +18,17 @@ In captivate variables you also have to set up these variables for you LRS
             v_secret=[ set to your sandbox LRS SECRET ]
 
 
-In this repo, you will find captivateSourceFiles folder:
+In this repo, you will find superWrapperSource folder:
 
-  From this folder copy controller.js, controllerNOIE.js, and tincan.js and place in the cpativate publish folder assets/js
+  From this folder copy controller.js, controllerNoIE.js, and tincan.js and place in the cpativate publish folder assets/js
   
-In the index.html page you need to add the changes reflect in captivateSourceFiiles folder> index.html
+In the index.html page that is published by captivate you need to add the changes reflect in superWrapper Source folder> index.html
+
+Lines 15 - 33 must be added (these are all new things, so they just need to be pasted in)
+
+Lines 128 - 137 change one line from the publish package, the original line (132) is commented out in this example and its replacement line is added line 133
+
+
+
+
 
