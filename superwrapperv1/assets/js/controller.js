@@ -2,12 +2,12 @@
       
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
+console.log('SuperWrapper v1.0');
 const customVerbPrefix="http://id.superwrapper.com/verb/";
-console.log('Captivate Wrapper v3.4 Superwrapper')
 const params = {
     "environment":"production",
     "reportingToLrs":true,
-    "Validate_email_address":false,
+    "Validate_email_address":false,//non-working feature
     "display_en_lang":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
                 access:[true,'accessed course','http://activitystrea.ms/schema/1.0/access'],
@@ -314,8 +314,8 @@ constructor(store){
                 "language":params.display_en_lang[0],
                 "extensions": {
                     "http://id.tincanapi.com/extension/invitee": {
-                        "store": this.url.searchParams.get('store'),
-                        "associate": this.url.searchParams.get('associate')
+                        "studentId": this.lmsId,
+                        "studentName": this.lmsUser
                       },
                 "http://superwrapper/extension/slide-info":{
                     "slideIndex":this.currentSlideIndex,
@@ -505,7 +505,7 @@ constructor(store){
                 delete this.stmt.context.extensions["http://id.tincanapi.com/extension/duration"];
             }
             //remove extension for SCORM user in LMS profile
-            //if (typeof user.scorm !='object')delete this.stmt.context.extensions["http://id.tincanapi.com/extension/invitee"];
+            if (typeof user.scorm !='object')delete this.stmt.context.extensions["http://id.tincanapi.com/extension/invitee"];
             //add slide to all visited slides
             if(sw.var('cpInfoCurrentSlideLabel') != this.slides[this.slides.length-1] &&this.verbName !='entered slide')this.slides.push(sw.var('cpInfoCurrentSlideLabel'));
             //removes parent if the verb is accessed or complete, becuase you can only access and complete the parent itself
