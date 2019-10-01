@@ -9,7 +9,7 @@ Step 1:
 
 In your captivate: On the first slide on slide enter, execute javascript, in the script window add the command:
 
-init();
+               init();
 
 Step 2:
 In captivate variables you also have to set up these variables for you LRS
@@ -32,12 +32,18 @@ Step 3:Publish the captivate following these parameters
         - Unzipped
         - Scorm or No Scorm is OK
         
-In this repo, you will find superWrapperSource folder:
+In this repo, you will find superWrapperSource folder (Needed for Step 4, 5 & 6):
 
 Step 4:
-From this folder copy controller.js, controllerNoIE.js, and tincan.js and place in the captivate publish folder assets/js folder.
-
+From this folder copy these files 
+        ` controller.js, 
+          controllerNoIE.js, 
+          tincan.js
+          
+          Place in the captivate publish folder assets/js folder.
+          
 Step5:
+
 In the index.html or index_scorm.html page that is published by captivate you need to add the changes reflect in superWrapper Source folder> index.html
 
 Lines 15 - 33 must be added (these are all new things, so they just need to be pasted in)
