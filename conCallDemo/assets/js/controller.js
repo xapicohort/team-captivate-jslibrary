@@ -18,7 +18,7 @@ const params = {
                 complete:[true,'completed course','http://activitystrea.ms/schema/1.0/complete'],
                 open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
-                pressClickBox:[true, 'clicked box'],
+                pressClickBox:[true, 'clicked box'],//same verb as above
                 experience:[false, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
             "quiz":
             {
@@ -518,6 +518,7 @@ constructor(store){
                             return;
                         }
                        if(params.consoleLog.statements) console.log("%c💾 Statement saved","color:green",{stmt});
+                       if(params.consoleLog.quickLogVerbActivity)console.log(stmt.verb.display['en-US'],stmt.target.definition.name['en-US']);
                     }
                 }
             )
