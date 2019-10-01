@@ -2,12 +2,16 @@ Our team repository
 
 
 Preface:
-The folders concalldemo, superwrapperv1, and superwrapperScormv1 are all working examples of the superwrapper depot.  
+
+The folders concalldemo, superwrapperv1, and superwrapperScormv1 are all working examples of the captivate superwrapper for xAPI.  
+
 The scorm version needs an LMS but the other 2 instances can be run locally or can be accessed from:
 
-http://www.brianfloyd.me/captivate-js-library/conCallDemo
-or
-http://www.brianfloyd.me/captivate-js-library/superWrapperv1
+          http://www.brianfloyd.me/captivate-js-library/conCallDemo
+
+                                    or
+
+          http://www.brianfloyd.me/captivate-js-library/superWrapperv1
 
 This repo lives on my personal server so any changes reflected here will be reflected on server.
 
