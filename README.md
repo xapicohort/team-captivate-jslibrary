@@ -14,7 +14,7 @@ In captivate variables you also have to set up these variables for you LRS
              v_prodKey = [ set to your LRS KEY ]
              v_prodSecret =[ set to your LRS SECRET ]
              v_prodEndpoint =[ set to your LRS endpoint ]
-             \
+             
         By default the params object contains environment which is set to "production", this can also be changed to "sandbox"
         If you are going to set up a sandbox your endpoint generally stays the same but you need to also set the variables in captivate for alternate credentials
         
