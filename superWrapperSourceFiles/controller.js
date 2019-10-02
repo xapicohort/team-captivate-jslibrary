@@ -3,7 +3,7 @@
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are very experimental, still a work in progress
-console.log('SuperWrapper v1.0');
+console.log('SuperWrapper v1.0.1');
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "environment":"production",
@@ -805,16 +805,16 @@ class VideoObject{
                 switch(playbar.trim()){
                     case 'Stop':
                         this.pauseTime.push(this.video.currentTime);
-                        if(params.params.consoleLog.videoLog)console.log(`stopped at ${this.pauseTime}`);
+                        if(params.consoleLog.videoLog)console.log(`stopped at ${this.pauseTime}`);
                         break;
                     case 'Pause':
                             this.pauseTime.push(this.video.currentTime);
-                            if(params.params.consoleLog.videoLog)console.log(`paused at ${this.pauseTime[this.pauseTime.length-1]}`);
+                            if(params.consoleLog.videoLog)console.log(`paused at ${this.pauseTime[this.pauseTime.length-1]}`);
                             xApiController.pauseTime=this.pauseTime[this.pauseTime.length-1];
                             xApiController.defineStmt(this.name,'pause');
                             break;
                     case 'Play':
-                        if(params.params.consoleLog.videoLog)console.log(`played after pause/stop at ${this.pauseTime[this.pauseTime.length-1]}`)
+                        if(params.consoleLog.videoLog)console.log(`played after pause/stop at ${this.pauseTime[this.pauseTime.length-1]}`)
                         break;
                     case 'Progress':
                             let a = playbarAction.split(',')[1];
@@ -824,7 +824,7 @@ class VideoObject{
                             let scrubTime = this.video.currentTime - this.getStartTime ;
                             let rawTime = scrubTime;
                             (scrubTime <0) ? scrubTime=`scrubbed back ${Math.abs(scrubTime)}`:scrubTime=`scrubbed forward ${Math.abs(scrubTime)}`
-                            if(params.params.consoleLog.videoLog) console.log(scrubTime);
+                            if(params.consoleLog.videoLog) console.log(scrubTime);
                             if(params.verbs.video.scrub){
                             xApiController.newTime=this.video.currentTime;
                             xApiController.pauseTime=this.getStartTime;
@@ -834,7 +834,7 @@ class VideoObject{
                             }
                         break;
                     case 'Mute':
-                        if(params.params.consoleLog.videoLog) console.log('mute at'+$(this.video)[0].currentTime);
+                        if(params.consoleLog.videoLog) console.log('mute at'+$(this.video)[0].currentTime);
                         if(params.verbs.video.mute){
                             xApiController.pauseTime=$(this.video)[0].currentTime;
                             xApiController.defineStmt(this.name,'mute');
@@ -842,11 +842,11 @@ class VideoObject{
                        
                         break;
                     case 'Unmute':
-                        if(params.params.consoleLog.videoLog) xApiController.defineStmt(this.name,'unmute');
+                        if(params.consoleLog.videoLog) xApiController.defineStmt(this.name,'unmute');
                         if(params.verbs.video.unmute)xApiController.pauseTime=$(this.video)[0].currentTime;
                         break;
                     case 'Volume':
-                        if(params.params.consoleLog.videoLog)console.log(`adjust to ${this.newVolume}`);
+                        if(params.consoleLog.videoLog)console.log(`adjust to ${this.newVolume}`);
                         if(params.verbs.video.adjustVolume[0]){
                         this.newVolume = playbarAction.split('set to')[1];
                         xApiController.pauseTime= this.startVolume;
@@ -856,7 +856,7 @@ class VideoObject{
                         }
                         break;
                     case 'Full Screen':
-                        if(params.params.consoleLog.videoLog)console.log('Full Screen');
+                        if(params.consoleLog.videoLog)console.log('Full Screen');
                         break;
                 }
             })    
