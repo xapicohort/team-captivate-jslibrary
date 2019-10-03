@@ -1,22 +1,41 @@
 SUperWrapper Desktop Overview
 
- 1 - Manage accounts/subscription access.  
-    -User sign up/ sign in and authentication
-    -Permissions system that charges for each single conversion or checks if subscription is up to date and 
-     allows users to process publish package
-    -Logic flow for autorizing credit card/paypal/etc for individual or subscription upgrades
+Login:
+    Including: Login with credentials
+                    - Check against server and load user profile
+               Forgot Password
+                    -Email and/or text password reset
+                Create account
+                    - Create user with 3 free trials of wrapper
+    
+    Be Nice: Facebook / gmail login/validation
 
-2- Crete file browser selection that will allow user to point to file or drag and drop.  Ideally this will accept
-   both normal folders and zip folders, and will output to user choice (tick box)
+Membership:
 
-3 - Create a params change screen that can be set up to customize the params found in superwrapperSource>controller.js
-    params object (Brian can customize this screen, also params will turn into params.json and load with ajax in
-    final product) Note:Validation for URI's are built into conroller code base.
+    Including:
+        - Credit system fopr  a per publish package
+        - Subscription Model for power users
+        - Cart / Checkout system
 
-4 - Parse index.html or index_scorm.html and match the superwrapper code add that is that can be found in repo 
-    at superwrappersource>index.html 
+Customization:
+    Including:
+        - Tick boxes to toggle verb reporting and prepolate default verb name and ID's
+        - Toggles for params
+        - Custom fields for uri base ID (validate) and project name
+        - Custom field for quiz name
+        - Tick box for toggle play button 
 
-5 - Add controller.js/tincan.js/controllerNoIE.js to the assets folder in the Captivate publish package
-    Note:Different versions of captivate use different versions of jquery...Currently loading from CDN in 
-    superwrapper index
+File system
+    Including:
+        -Ability to browse and select files
+        -Ability to add files to different folders
+            -Add controller.js and tincan.js to captivate assets/js/ folder
+        -Ability to parse index and index_scorm and add needed code
+        -Ability to out put folder to desktop or destination
+       
+    Nice to have:
+        -Drag and drop file system
+         -Ability to zip output folder
+    
+
 
