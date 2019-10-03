@@ -28,7 +28,9 @@ script window add:
 In captivate you have to set up these user variables for your LRS:
 
 ```v_prodKey = [ set to your LRS Key]```
+
 ```v_prodSecret = [ set to your LRS Secret ]```
+
 ```v_prodEndpoint = [set to your LRS endpoint]```
                     
 Note:Included Captivate example file has these set up with our cohorts Watershed LRS
