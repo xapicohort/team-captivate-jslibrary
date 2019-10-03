@@ -9,14 +9,11 @@ The scorm version needs an LMS but the other instances can be run locally or can
 
 [conference call demo version](http://www.brianfloyd.me/captivate-js-library/conCallDemo)
 
-                          or
-
-http://www.brianfloyd.me/captivate-js-library/superWrapperv1
 
 This repo lives on my personal server so any changes reflected here will be reflected on server.
 
 
-Basic set-up and instructions:
+# Basic set-up and instructions:
 
 ### Step 1:  
 
@@ -24,18 +21,17 @@ In your captivate project on the first slide in the on slide enter action add ac
 script window add:
 
 ```init();```
-                        
-                        
+                                               
                         
 ### Step 2: 
 
 In captivate you have to set up these user variables for your LRS:
 
-                    v_prodKey = [ set to your LRS Key]
-                    v_prodSecret = [ set to your LRS Secret ]
-                    v_prodEndpoint = [set to your LRS endpoint]
+```v_prodKey = [ set to your LRS Key]```
+```v_prodSecret = [ set to your LRS Secret ]```
+```v_prodEndpoint = [set to your LRS endpoint]```
                     
-                    Note:Included Captivate example file has these set up with our cohorts Watershed LRS
+Note:Included Captivate example file has these set up with our cohorts Watershed LRS
                     
  ### Step 3: 
  
@@ -84,7 +80,7 @@ Your good to go!
               Zip contents and upload to LMS (scorm publish)
               Open the folder and and open index.html file locally 
               
-Check out video available at https://www.youtube.com/watch?v=VcpQhUK5ELE&feature=youtu.be for a walkthrough (scrub to 6 minutes)
+Check out video available at [confernce call walk through](https://www.youtube.com/watch?v=VcpQhUK5ELE&feature=youtu.be) for a walkthrough (scrub to 6 minutes)
 
                 
  10/2 All versions of controller update to 1.0.1 to address a defect causing video statements to send.            
