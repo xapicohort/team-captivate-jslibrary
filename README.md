@@ -7,7 +7,7 @@ The folders concalldemo, superwrapperv1, and superwrapperScormv1 are all working
 
 The scorm version needs an LMS but the other 2 instances can be run locally or can be accessed from:
 
-           http://www.brianfloyd.me/captivate-js-library/conCallDemo
+           <http://www.brianfloyd.me/captivate-js-library/conCallDemo>
 
                                     or
 
