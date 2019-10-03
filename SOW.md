@@ -1,6 +1,7 @@
-SUperWrapper Desktop Overview
 
-Login:
+# SuperWrapper Desktop Overview
+
+### Login:
     Including: Login with credentials
                     - Check against server and load user profile
                Forgot Password
@@ -10,14 +11,14 @@ Login:
     
     Be Nice: Facebook / gmail login/validation
 
-Membership:
+### Membership:
 
     Including:
         - Credit system fopr  a per publish package
         - Subscription Model for power users
         - Cart / Checkout system
 
-Customization:
+### Customization:
     Including:
         - Tick boxes to toggle verb reporting and prepolate default verb name and ID's
         - Toggles for params
@@ -25,7 +26,7 @@ Customization:
         - Custom field for quiz name
         - Tick box for toggle play button 
 
-File system
+### File system
     Including:
         -Ability to browse and select files
         -Ability to add files to different folders
