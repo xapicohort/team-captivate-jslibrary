@@ -23,7 +23,7 @@ Step 1:
 In your captivate project on the first slide in the on slide enter action add action 'execute javascript', in the 
 script window add:
 
-                        init();
+```init();```
                         
                         
                         
