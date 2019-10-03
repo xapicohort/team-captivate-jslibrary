@@ -3,7 +3,7 @@
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are very experimental, still a work in progress
-console.log('SuperWrapper v1.0.1');
+console.log('SuperWrapper v1.0.2');
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "environment":"production",
@@ -122,11 +122,12 @@ constructor(store){
                 return v.toString(16);
                })
          })();
+        
          this.revision =(()=>{
              return this.actorEmail.split('@')[0]+this.projectEnterTime
          })();
         this.lmsUser=user.learner.name;
-        this.lmsId =user.learner.name;
+        this.lmsId =user.learner.id;
         if (params.reportingToLrs){
         this.lrs=(()=>{ 
             if (params.environment ==='sandbox'){
@@ -876,12 +877,15 @@ class Learner{
         };//function to test email
         };
         init(callback){
+   
         if (typeof this.scorm ==="object"){
+
                //if there is a scorm user avaiable this will grab data from scorm if available
             this.learner = {
-            "id":(this.testEmail(this.scorm.LearnerId))?this.scorm.learnerId:`${insert_(this.scorm.learnerid)}@superwrapper.com`,
+            "id":(this.testEmail(this.scorm.LearnerId))?this.scorm.LearnerId:`${insert_(this.scorm.LearnerId)}@superwrapper.com`,
             "name":this.scorm.LearnerName
              };
+        
              callback();    
         }
         else if(this.url_emailParam !==null  && this.testEmail(this.url_emailParam)){

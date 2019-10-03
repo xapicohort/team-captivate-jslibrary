@@ -21,8 +21,8 @@ if(navigator.appName  !== "Microsoft Internet Explorer"){
 	controllerVersion= "assets/js/controller.js";
 	tincan = "assets/js/tincan.js"
 	cpm ="assets/js/cpm.js";
-	//jq='assets/js/jquery-1.11.3.min.js';
-	jq='https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js'
+	jq='assets/js/jquery-1.11.3.min.js';
+	//jq='https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js'
 }else{
 	controllerVersion ="assets/js/controllerNoIE.js";
 	cpm = null; //cause IE not to load
@@ -116,7 +116,7 @@ function initializeCP()
 						     	//********************
 						//**  SuperWrapper  **
 						//********************
-						//var lJSFiles = [  'assets/js/jquery-1.11.3.min.js','scormdriver.js','assets/js/CPM.js' ];
+						//var lJSFiles = [  'assets/js/jquery-1.11.3.min.js','scormdriver.js','assets/js/tincan.js','assets/js/controller.js','assets/js/CPM.js' ];
 						var lJSFiles = [  jq,'scormdriver.js',tincan,controllerVersion,cpm ];
 						//this is loading all the variables we set up top
 						//********************
@@ -125,7 +125,7 @@ function initializeCP()
 						
 						cpXHRJSLoader.js(lJSFiles,function()
 						{
-							//console.log("js loaded");
+							console.log("js loaded");
 
 							var imagesJSONFiles = [ 'dr/imgmd.json' ];
 							cpXHRJSLoader.loadImagesJSON(imagesJSONFiles,function(imageToJSONPathMap){
