@@ -9,7 +9,7 @@ Q: How does superwrapper establish user
 A: First it looks for an LMS and Scorm package and pulls user if avaiable
   
    Next, it looks for a passed 'mailto' param you can append email if you have link for course by adding 
-   ?mailto=sample@replaceme.com
+   ```?mailto=sample@replaceme.com```
 
    Finally, if the first 2 conditions are null superwrapper will prompt user to enter email address
 
