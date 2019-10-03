@@ -85,7 +85,10 @@ Your good to go!
 Check out video available at [confernce call walk through](https://www.youtube.com/watch?v=VcpQhUK5ELE&feature=youtu.be) for a walkthrough (scrub to 6 minutes)
 
                 
- 10/2 All versions of controller update to 1.0.1 to address a defect causing video statements to send.            
+ 10/2 All versions of controller update to 1.0.1 to address a defect causing video statements to send.   
+
+ 10/3 All versions of controller updated to 1.0.2 to address a defect causing package to not load correctly from LMS
+          
 
 
 
