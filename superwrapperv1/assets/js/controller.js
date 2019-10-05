@@ -3,11 +3,11 @@
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are very experimental, still a work in progress
-console.log('SuperWrapper v1.0.2');
+console.log('SuperWrapper v1.0.3');
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "environment":"production",
-    "reportingToLrs":true,
+    "reportingToLrs":false,
     "Validate_email_address":false,//non-working feature
     "display_en_lang":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
@@ -82,14 +82,6 @@ function init(){
 class XAPIController{
 constructor(store){
         this.totalSlides = sw.var('cpInfoSlideCount');
-        this.eventBinder = (()=>{
-           return (navigator.platform ==="iPhone" || navigator.platform ==="iPad")
-           ?"touchend":"mouseup"
-        })();
-        this.startEventBinder = (()=>{
-            return (navigator.platform ==="iPhone" || navigator.platform ==="iPad")
-            ?"touchstart":"mousedown"
-        })();
         this.currentSlideName=sw.var('cpInfoCurrentSlideLabel');
         this.currentSlideIndex=sw.var('cpInfoCurrentSlideIndex')+1;
         this.slides=[];
@@ -99,10 +91,12 @@ constructor(store){
         this.url = new URL(location);
         this.slideVids = [];
         this.idPrefix = (()=>{
-                return params.baseId ||this.url.origin+this.url.pathname;
+        let uri =  params.baseId ||this.url.origin+this.url.pathname;
+        if(uri[uri.length-1] ==='/') return uri;
+        else return `${uri}/`
         })();
         this.parentName = params.parentName || sw.var('cpInfoProjectName');
-        this.parentId = `${this.idPrefix}/parent/${sw.insert_(this.parentName)}`;
+        this.parentId = `${this.idPrefix}parent/${sw.insert_(this.parentName)}`;
         this.parentDescription =sw.var('cpInfoDescription');
         this.activityDescription='null';
         this.slideEnterTime = null;
