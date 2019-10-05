@@ -89,6 +89,8 @@ Check out video available at [confernce call walk through](https://www.youtube.c
 
  10/3 All versions of controller updated to 1.0.2 to address a defect causing package to not load correctly from LMS - Added zip package to upload to LMS for testing to superWrapperScormv1 folder. Fixed variable naming convention problem exact capitilization for file names is critical to LMS success.
 
+ 10/4 All versoin of controller updated to 1.0.3 to address a defect where the / in parent ID was doubling up...no when user passes customer base URI in params.basedId if the end with aa / or don't the parent id will only have 1  /
+
  
  
 
