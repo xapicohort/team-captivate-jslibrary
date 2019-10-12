@@ -3,11 +3,11 @@
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are very experimental, still a work in progress
-console.log('SuperWrapper v1.0.4');
+console.log('SuperWrapper v1.0.5.1');
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "environment":"production",
-    "reportingToLrs":false,
+    "reportingToLrs":true,
     "Validate_email_address":false,//non-working feature
     "display_en_lang":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
@@ -48,7 +48,7 @@ const params = {
     },
     "login":{
                 loginMessage:null,
-                placeholderText:"This is now dynamic",
+                placeholderText:null,
                 skipEmail:false,
                 skipEmailValue:null,
                 invalidMsg:null
@@ -869,8 +869,8 @@ class Learner{
              $(`<div class ="login-screen">`)
              .appendTo('body')
              .css({
-            "width":"98vw",
-            "min-height":"100vh",
+            //"padding-bottom":"2vh",
+            "min-height":"95vh",
             "border":"1px black solid",
             "border-radius":"5px",
             "background-color":"grey"
@@ -906,7 +906,7 @@ class Learner{
             $(`<div class="message">${sw.message}</div>`)
             .appendTo(sw.login)
             .css({
-                "width":"60%",
+                "width":"50%",
                 "padding-top":"25px",
                 "font-family":"arial",
                 "margin-left":"50%",
@@ -914,39 +914,45 @@ class Learner{
                 "color":"#FFFAFA"
             })
 
-            if(!params.login.skipEmail){
-            $('<button id="skip">Skip Email</button>')
-            .insertBefore('.message')
-            .css({
-                "background-color":"orange",
-                "color":"#FFFAFA",
-                "margin-left":"2vw",
-                "min-width":"8vw",
-                "min-height":"5vh",
-                "border-radius":"5px",
-                "box-shadow": "2px 2px #888888"
         
-            }).hover($(this).css({
-                "background-color":"#EE7600",
-                "background-color":"orange"
-            }))  .on('click',()=>{
-                console.log('click')
-                window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skipEmailValue))?params.login.skipEmailValue:'user@SuperWrapper.com')})()}`,"_parent");
-            });
-        }
+          
 
             $('<button id="submit">Submit Email</button>')
             .insertBefore('.message')
             .css({
                 "background-color":"green",
                 "color":"white",
-                "margin-left":"30vw",
+                "margin-left":"40vw",
                 "min-width":"8vw",
                 "min-height":"5vh",
                 "border-radius":"5px",
                 "box-shadow": "2px 2px #888888",
              
-            }).on ('click',()=>passEmail($('.email-input').val()))
+            }).on ('click',()=>{passEmail($('.email-input').val())
+          
+        
+        });
+
+            if(!params.login.skipEmail){
+                $('<button id="skip">Skip Email</button>')
+                .insertAfter('#submit')
+                .css({
+                    "background-color":"orange",
+                    "color":"#FFFAFA",
+                    "margin-left":"2vw",
+                    "min-width":"8vw",
+                    "min-height":"5vh",
+                    "border-radius":"5px",
+                    "box-shadow": "2px 2px #888888"
+            
+                }).hover($(this).css({
+                    "background-color":"#EE7600",
+                    "background-color":"orange"
+                }))  .on('click',()=>{
+                    console.log('click')
+                    window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skipEmailValue))?params.login.skipEmailValue:'user@SuperWrapper.com')})()}`,"_parent");
+                });
+            }
         
             $(`<footer class ="footer">${sw.footer}</footer>`)
             .insertAfter('.message')
@@ -959,6 +965,25 @@ class Learner{
                 "font-family":"arial",
                 "font-size":"80%"
             });
+
+            if(screen.width <415){
+
+                $('.message')
+                .css({
+                    "width":"85%"
+                })
+
+                $('.email-input')
+                .css({
+                    "min-width":"75%"
+                })
+                $('#submit').
+                css({
+                    "margin-left":"28vw"
+                })
+
+            }
+
 
         function passEmail(email){
             let valid = user.testEmail(email);
