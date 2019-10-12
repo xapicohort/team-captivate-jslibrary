@@ -3,7 +3,7 @@
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are very experimental, still a work in progress
-console.log('SuperWrapper v1.0.3');
+console.log('SuperWrapper v1.0.4');
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "environment":"production",
@@ -46,6 +46,14 @@ const params = {
                 videoLog:true,
                 eventListener:false
     },
+    "login":{
+                loginMessage:null,
+                placeholderText:"This is now dynamic",
+                skipEmail:false,
+                skipEmailValue:null,
+                invalidMsg:null
+
+    },
     "quizName":null,
     "quizId":null,//uses baseID-ActivityName
     "remove_play_button_on_mobile":true,
@@ -78,6 +86,7 @@ function init(){
         xApiController.cpListeners(); 
      });
 };
+
 };
 class XAPIController{
 constructor(store){
@@ -773,6 +782,195 @@ class SuperWrapper{
         else return;
     };
 };
+class Learner{
+    constructor(){
+    this.scorm = this.getAPI();//call functions that get scorm object
+    this.findAPITries = 0;//call variable needed for previous function
+    this.url = new URL(location);//get url infomration
+    this.url_emailParam = this.url.searchParams.get("mbox")  || this.url.searchParams.get('mailto');//grab mbox param for url if passed
+    this.learner=null;//creates an empty learner
+    this.testEmail = email=>{ 
+        let emailValidation = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        let valid = emailValidation.test(email);
+        return valid;
+    };//function to test email
+    };
+    init(callback){
+
+    if (typeof this.scorm ==="object"){
+
+           //if there is a scorm user avaiable this will grab data from scorm if available
+        this.learner = {
+        "id":(this.testEmail(this.scorm.LearnerId))?this.scorm.LearnerId:`${insert_(this.scorm.LearnerId)}@superwrapper.com`,
+        "name":this.scorm.LearnerName
+         };
+    
+         callback();    
+    }
+    else if(this.url_emailParam !==null  && this.testEmail(this.url_emailParam)){
+          //if scorm not available next check mbox parameter in the url to see if any 
+         //value has been passed
+        this.learner = {
+            "id":this.url_emailParam,
+            "name":this.url_emailParam.split('@')[0]
+             };
+             sw.capSetVarValue('v_actorName',this.learner.name);
+            callback();
+    }
+    else{
+        //present user with login screen TODO:Rework onload to pop up faster
+        console.log('Must pass an email address into login screen is updated');
+        this.loginScreen(callback);
+    }  
+    };
+    findAPI(win){
+        // Check to see if the window (win) contains the API
+        // if the window (win) does not contain the API and
+        // the window (win) has a parent window and the parent window
+        // is not the same as the window (win)
+        while ( (win.API == null) && (win.parent != null) && (win.parent != win) )
+        {
+            // increment the number of this.findAPITries
+            this.findAPITries++;
+            // Note: 7 is an arbitrary number, but should be more than sufficient
+            if (this.findAPITries > 7)
+            {
+                return null;
+            }
+            // set the variable that represents the window being
+            // being searched to be the parent of the current window
+            // then search for the API again
+            win = win.parent;
+        }
+        return win.API;
+            };
+    getAPI()
+        {
+        // start by looking for the API in the current window
+        var theAPI = this.findAPI(window);
+        // if the API is null (could not be found in the current window)
+        // and the current window has an opener window
+        if ( (theAPI == null) && (window.opener != null) && (typeof(window.opener) != "undefined") )
+        {
+            // try to find the API in the current window’s opener
+            theAPI = this.findAPI(window.opener);
+        }
+        // if the API has not been found
+        if (theAPI == null)
+        {
+            // Alert the user that the API Adapter could not be found
+            theAPI = false;
+        }
+        return theAPI;
+    };
+ loginScreen(callback){
+    sw.checkLoad('.cpMainContainer',()=>{
+             $('.cpMainContainer').hide();
+             $(`<div class ="login-screen">`)
+             .appendTo('body')
+             .css({
+            "width":"98vw",
+            "min-height":"100vh",
+            "border":"1px black solid",
+            "border-radius":"5px",
+            "background-color":"grey"
+            //TODO:Create xAPI WRapper logo/background
+            }); 
+            sw.login = $('.login-screen');
+            sw.placeholder = params.login.placeholderText || "Please enter your email and press enter or submit";
+            sw.footer ="Powered by SuperWrapper";
+            sw.message= params.login.loginMessage ||`Entering an email address will be the user that is reported to the demo LRS, for this
+                        demonstration if you would prefer please press the skip button and a demo email
+                        will be assinged to you`
+    //create input box
+            $(`<input class ="email-input" type="email" placeholder ="${sw.placeholder}">"`)
+            .appendTo(sw.login)
+            .css({
+                "min-width":"50vw",
+                "min-height":"5vh",
+                "font-size":"90%",
+                "margin-left":"50%",
+                "margin-top":"10%",
+                "border-radius":"10px",
+                "box-shadow":"5px 5px grey",
+                "transform":"translate(-50%,-25%)",
+            }).
+            focus()
+            //event listener for enter
+            .on("keyup", e=>{
+                if(e.which ===13 || e.code===13){
+                    let email = $(e.target).val()
+                    passEmail(email);
+                } 
+            });
+            $(`<div class="message">${sw.message}</div>`)
+            .appendTo(sw.login)
+            .css({
+                "width":"60%",
+                "padding-top":"25px",
+                "font-family":"arial",
+                "margin-left":"50%",
+                "transform":"translate(-50%,-10%)",
+                "color":"#FFFAFA"
+            })
+
+            if(!params.login.skipEmail){
+            $('<button id="skip">Skip Email</button>')
+            .insertBefore('.message')
+            .css({
+                "background-color":"orange",
+                "color":"#FFFAFA",
+                "margin-left":"2vw",
+                "min-width":"8vw",
+                "min-height":"5vh",
+                "border-radius":"5px",
+                "box-shadow": "2px 2px #888888"
+        
+            }).hover($(this).css({
+                "background-color":"#EE7600",
+                "background-color":"orange"
+            }))  .on('click',()=>{
+                console.log('click')
+                window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skipEmailValue))?params.login.skipEmailValue:'user@SuperWrapper.com')})()}`,"_parent");
+            });
+        }
+
+            $('<button id="submit">Submit Email</button>')
+            .insertBefore('.message')
+            .css({
+                "background-color":"green",
+                "color":"white",
+                "margin-left":"30vw",
+                "min-width":"8vw",
+                "min-height":"5vh",
+                "border-radius":"5px",
+                "box-shadow": "2px 2px #888888",
+             
+            }).on ('click',()=>passEmail($('.email-input').val()))
+        
+            $(`<footer class ="footer">${sw.footer}</footer>`)
+            .insertAfter('.message')
+            .css({
+                "color":"#FFFAFA",
+                "position":"absolute",
+                "bottom":"4%",
+                "left":"50%",
+                "transform":"translate(-50%,-50%)",
+                "font-family":"arial",
+                "font-size":"80%"
+            });
+
+        function passEmail(email){
+            let valid = user.testEmail(email);
+            if(!valid)$('.email-input').val('').focus('').attr("placeholder",params.login.invalidMsg || "Invalid email please try again and press enter");
+            else {
+                window.open(`${user.url.href}?mbox=${email}`,"_parent");
+            }
+
+
+        }    
+    });
+}};
 class VideoObject{
     constructor(vidObj){
         this.video =vidObj;
@@ -857,179 +1055,7 @@ class VideoObject{
             })    
             }
 };
-class Learner{
-        constructor(){
-        this.scorm = this.getAPI();//call functions that get scorm object
-        this.findAPITries = 0;//call variable needed for previous function
-        this.url = new URL(location);//get url infomration
-        this.url_emailParam = this.url.searchParams.get("mbox")  || this.url.searchParams.get('mailto');//grab mbox param for url if passed
-        this.learner=null;//creates an empty learner
-        this.testEmail = email=>{ 
-            let emailValidation = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            let valid = emailValidation.test(email);
-            return valid;
-        };//function to test email
-        };
-        init(callback){
-   
-        if (typeof this.scorm ==="object"){
 
-               //if there is a scorm user avaiable this will grab data from scorm if available
-            this.learner = {
-            "id":(this.testEmail(this.scorm.LearnerId))?this.scorm.LearnerId:`${insert_(this.scorm.LearnerId)}@superwrapper.com`,
-            "name":this.scorm.LearnerName
-             };
-        
-             callback();    
-        }
-        else if(this.url_emailParam !==null  && this.testEmail(this.url_emailParam)){
-              //if scorm not available next check mbox parameter in the url to see if any 
-             //value has been passed
-            this.learner = {
-                "id":this.url_emailParam,
-                "name":this.url_emailParam.split('@')[0]
-                 };
-                 sw.capSetVarValue('v_actorName',this.url_emailParam);
-                callback();
-        }
-        else{
-            //present user with login screen TODO:Rework onload to pop up faster
-            console.log('Must pass an email address into login screen is updated');
-            this.loginScreen(callback);
-        }  
-        };
-        findAPI(win){
-            // Check to see if the window (win) contains the API
-            // if the window (win) does not contain the API and
-            // the window (win) has a parent window and the parent window
-            // is not the same as the window (win)
-            while ( (win.API == null) && (win.parent != null) && (win.parent != win) )
-            {
-                // increment the number of this.findAPITries
-                this.findAPITries++;
-                // Note: 7 is an arbitrary number, but should be more than sufficient
-                if (this.findAPITries > 7)
-                {
-                    return null;
-                }
-                // set the variable that represents the window being
-                // being searched to be the parent of the current window
-                // then search for the API again
-                win = win.parent;
-            }
-            return win.API;
-                };
-        getAPI()
-            {
-            // start by looking for the API in the current window
-            var theAPI = this.findAPI(window);
-            // if the API is null (could not be found in the current window)
-            // and the current window has an opener window
-            if ( (theAPI == null) && (window.opener != null) && (typeof(window.opener) != "undefined") )
-            {
-                // try to find the API in the current window’s opener
-                theAPI = this.findAPI(window.opener);
-            }
-            // if the API has not been found
-            if (theAPI == null)
-            {
-                // Alert the user that the API Adapter could not be found
-                theAPI = false;
-            }
-            return theAPI;
-        };
-     loginScreen(callback){
-        sw.checkLoad('.cpMainContainer',()=>{
-                 $('.cpMainContainer').hide();
-                 $(`<div class ="login-screen">`)
-                 .appendTo('body')
-                 .css({
-                "padding":"0px",
-                "margin":"0px",
-                "border":"1px black solid",
-                "z-index":"10",
-                "width":"60vw",
-                "height":"60vh",
-                "border-radius":"5px",
-                "margin-top":"25%",
-                "margin-left":"50%",
-                "transform":"translate(-50%,-50%)",
-                "background-color":"grey"
-                //TODO:Create xAPI WRapper logo/background
-                }); 
-                sw.login = $('.login-screen');
-                sw.placeholder = "Please enter your email and press enter";
-                sw.footer ="Powered by SuperWrapper";
-                sw.message=`Entering an email address will be the user that is reported to the demo LRS, for this
-                            demonstration if you would prefer please press the skip button and a demo email
-                            will be assinged to you`
-        //create input box
-                $(`<input class ="email-input" type="email" placeholder ="${sw.placeholder}">"`)
-                .appendTo(sw.login)
-                .css({
-                    "min-width":"60%",
-                    "height":"8%",
-                    "font-size":"60%",
-                    "margin-left":"50%",
-                    "margin-top":"10%",
-                    "border-radius":"10px",
-                    "box-shadow":"5px 5px grey",
-                    "transform":"translate(-50%,-25%)",
-                }).
-                focus()
-                //event listener for enter
-                .on("keyup", e=>{
-                    if(e.which ===13 || e.code===13){
-                        let email = $(e.target).val()
-                        let valid = user.testEmail(email);
-                        if(!valid)$(e.target).val('').focus('').attr("placeholder","Invalid email please try again and press enter");
-                        else {
-                            window.open(`${this.url.href}?mbox=${email}`,"_parent");
-                        }
-                    } 
-                });
-                $(`<div class="message">${sw.message}</div>`)
-                .appendTo(sw.login)
-                .css({
-                    "width":"60%",
-                    "padding-top":"25px",
-                    "font-family":"arial",
-                    "margin-left":"50%",
-                    "transform":"translate(-50%,-10%)",
-                    "color":"#FFFAFA"
-                })
-                $('<button id="skip">Skip Email</button>')
-                .insertAfter('.message')
-                .css({
-                    "background-color":"orange",
-                    "color":"#FFFAFA",
-                    "margin-left":"50%",
-                    "min-width":"100px",
-                    "min-height":"30px",
-                    "border-radius":"5px",
-                    "box-shadow": "2px 2px #888888",
-                    "transform":"translate(-50%,0%)"
-                })
-                $('#skip').hover($(this).css({
-                    "background-color":"#EE7600",
-                    "background-color":"orange"
-                }))
-                .on('click',()=>{
-                    console.log('click')
-                    window.open(`${this.url.href}?mbox=${'demo@SuperWrapper.com'}`,"_parent")})
-                $(`<footer class ="footer">${sw.footer}</footer>`)
-                .appendTo(sw.login)
-                .css({
-                    "color":"#FFFAFA",
-                    "position":"absolute",
-                    "top":"4%",
-                    "left":"50%",
-                    "transform":"translate(-50%,-50%)",
-                    "font-family":"arial",
-                    "font-size":"80%"
-                });
-        });
-}};
 class Verbs{
     constructor(){
         this.enter = params.verbs.enter[1] || "entered slide"
