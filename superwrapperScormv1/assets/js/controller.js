@@ -3,7 +3,7 @@
 //TODO: look for instances of toLowerCase();
 //MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are very experimental, still a work in progress
-console.log('SuperWrapper v1.0.5.1');
+console.log('SuperWrapper v1.0.6');
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "environment":"production",
@@ -47,11 +47,11 @@ const params = {
                 eventListener:false
     },
     "login":{
-                loginMessage:null,
-                placeholderText:null,
-                skipEmail:false,
-                skipEmailValue:null,
-                invalidMsg:null
+                loginMessage:null,//this is the message displayed below email entry box
+                placeholderText:null,//this is the placeholder for the email entry box 
+                skipEmail:false,//when set to skip email button will not show
+                skipEmailValue:null,//if skip email buttton is turn on this is the email address it will return
+                invalidMsg:null//this is the plaeholder text that will be displayed if incorrect emal was displayed
 
     },
     "quizName":null,

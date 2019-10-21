@@ -94,6 +94,8 @@ Check out video available at [confernce call walk through](https://www.youtube.c
  10/12  All versions of controller updated to 1.0.4 so that user login screen is more responsive.  The skip email button is now able to toggle, as well as make all the messages on the screen customizable in params.login .  Still need  to address screen layout and css
 
  10/12 All versions of controller updated to 1.0.5.1, login screen now sizes correctly in responsive environment (note it happens on load, switching to responsive after loading on desktop will not work - load in the resolution you will stay with)
+
+ 10/21 1.0.6 - updated comments in params to assist in customizing login page
  
  
 
