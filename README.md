@@ -89,7 +89,7 @@ Check out video available at [confernce call walk through](https://www.youtube.c
 
  10/3 All versions of controller updated to 1.0.2 to address a defect causing package to not load correctly from LMS - Added zip package to upload to LMS for testing to superWrapperScormv1 folder. Fixed variable naming convention problem exact capitilization for file names is critical to LMS success.
 
- 10/4 All versoin of controller updated to 1.0.3 to address a defect where the / in parent ID was doubling up...no when user passes customer base URI in params.basedId if the end with aa / or don't the parent id will only have 1  /
+ 10/4 All versoin of controller updated to 1.0.3 to address a defect where the / in parent ID was doubling up...now when user passes custom base URI in params.basedId if the end with aa / or don't the parent id will only have 1  /
 
  10/12  All versions of controller updated to 1.0.4 so that user login screen is more responsive.  The skip email button is now able to toggle, as well as make all the messages on the screen customizable in params.login .  Still need  to address screen layout and css
 
