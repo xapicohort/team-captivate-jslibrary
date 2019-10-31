@@ -14,7 +14,7 @@
 ### Membership:
 
     Including:
-        - Credit system fopr  a per publish package
+        - Credit system for a per publish package
         - Subscription Model for power users
         - Cart / Checkout system
 

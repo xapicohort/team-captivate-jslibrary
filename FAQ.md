@@ -1,7 +1,7 @@
 Q: Can the same index.html page be used when republishing.
 
 A: Yes, the same index page can be used even from project to project, the only consideration we are
-   aware of is if the size of the project (resolution or responsive) you will likely need a new index page.
+   aware of is if the size of the project (resolution or responsive) changes you will likely need a new index page.
 
 
 Q: How does superwrapper establish user
