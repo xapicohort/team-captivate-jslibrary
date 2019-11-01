@@ -1,9 +1,10 @@
 
       
 //TODO: look for instances of toLowerCase();
-//MULTIPLE CHOICE QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
-//NOTE:Quiz results are very experimental, still a work in progress
-console.log('SuperWrapper v1.0.6');
+//MATCHING QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
+//NOTE:Quiz results are all working with the exception of likert
+console.log('SuperWrapper v1.0.7');
+
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "environment":"production",
@@ -19,13 +20,13 @@ const params = {
                 open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
                 pressClickBox:[true, 'clicked box'],//same verb as above
-                experience:[false, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
+                experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
             "quiz":
             {
                 start:[true,'started','http://activitystrea.ms/schema/1.0/start'],
                 skip:[true,'skipped',"http://id.tincanapi.com/verb/skipped"],
                 answer:[true,'answered',"http://adlnet.gov/expapi/verbs/answered"],
-                review:[true,'reviewed','https://brindlewaye.com/xAPITerms/verbs/reviewed/'],
+                review:[true,'reviewed','https://brindlewaye.com/xAPITerms/verbs/reviewed'],
                 finish:[true,'completed','http://activitystrea.ms/schema/1.0/complete']
             },
             "video":
@@ -43,6 +44,7 @@ const params = {
                 statements:true,
                 quickLogVerbActivity:false,
                 quizLog:false,
+                quizArray:false,
                 videoLog:true,
                 eventListener:false
     },
@@ -88,6 +90,8 @@ function init(){
 };
 
 };
+
+
 class XAPIController{
 constructor(store){
         this.totalSlides = sw.var('cpInfoSlideCount');
@@ -165,6 +169,7 @@ constructor(store){
         })();
     };
     defineStmt(passedActivity,verb){
+    
         //console.log(passedActivity)
         let prevSlideIndex =(sw.var('cpInfoPrevSlide'));
         if(prevSlideIndex ===0  || passedActivity===null){
@@ -174,6 +179,7 @@ constructor(store){
              this.launch = true;
              return this.parentName})();
             };
+            
         this.parentType= this.activityType.course;
         this.activity = passedActivity;
         this.activityId = `${this.idPrefix}slide/${sw.insert_(this.activity)}`;
@@ -229,7 +235,7 @@ constructor(store){
             this.type = this.activityType.assessment;
         break;
         case 'finish':
-            console.log(quiz.quizName)
+        
                 this.activityDescription=`Finished Assessment ${quiz.quizName}`;
                 this.activity = quiz.quizName;
                 this.activityId = quiz.quizId;
@@ -266,7 +272,10 @@ constructor(store){
         if(arguments[0] != null  && this.verbName !=='completed' ){
          
             let definitions = new Definitions();
-            return definitions.returnDefinition(sw.insert_(type));
+
+            console.log(definitions.returnDefinition(type))
+            
+            return definitions.returnDefinition(type);
         } else{
         return new TinCan.Activity({
             definition : {
@@ -416,6 +425,7 @@ constructor(store){
                 break;
                 case 'answered':
                     //set activityType for answered to Types(aseessment)
+                   // console.log(this.quizParent)
                     this.quizParent.definition.type=this.activityType.assessment;
                     //cretate 2nd parent for slide
                     add2ndParent(this.quizParent);
@@ -502,6 +512,7 @@ constructor(store){
     };
     sendStmt(){
        let stmt =this.stmt;
+       console.log(stmt);
         if (this.ie===true  || params.reportingToLrs ===false){
             if(params.consoleLog.statements) console.log("%c🖨 Reporting off console only","color:red",{stmt});
             if(params.consoleLog.quickLogVerbActivity)console.log(stmt.verb.display['en-US'],stmt.target.definition.name['en-US']);
@@ -537,7 +548,7 @@ constructor(store){
             if(sw.var('cpInQuizScope')==0){this.quizStarted = false}
             if(sw.var('cpInQuizScope')==true  && !this.quizStarted){
                 if(quiz.question ===null){
-                    if(params.verbs.quiz.start)this.defineStmt(quiz.quizName,'start');
+                    if(params.verbs.quiz.start[0])this.defineStmt(quiz.quizName,'start');
                     this.quizStarted = true;
                 }
             }
@@ -546,7 +557,7 @@ constructor(store){
             this.currentSlideIndex=sw.var('cpInfoCurrentSlideIndex')+1;
             this.totalSlides=sw.var('cpInfoSlideCount');
            if(this.currentSlideIndex === this.totalSlides && params.verbs.complete){
-                this.defineStmt(null,'complete');
+                if(params.verbs.complete[0])this.defineStmt(null,'complete');
                 //console.log(this.slides)
                 this.defineStmt(this.slides[this.slides.length-2],'view')
                 this.launchFlag=true;
@@ -609,7 +620,7 @@ constructor(store){
                     this.groupName ="A grouping category for buttons";
                     this.groupId=`${this.idPrefix}group/resumeButtons`
                     this.groupType=this.activityType.buttonGroup
-                    xApiController.defineStmt(activity,verb);
+                    if(params.verbs.pressButton[0])xApiController.defineStmt(activity,verb);
                    
                 }else{
                     this.groupName =null;
@@ -619,11 +630,12 @@ constructor(store){
                  });
             window.cpAPIEventEmitter.addEventListener('CPAPI_QUESTIONSUBMIT',e=>{
                 this.quizhandler(e) 
-                console.log(quiz)
-                if(quiz.correct===true){
-                    this.defineStmt(quiz.Name,'finish')
-                }
+                //console.log(quiz)
+                // if(quiz.correct===true){
+                //     this.defineStmt(quiz.Name,'finish')
+                // }//TODO:legacy commented out - broken?? check finish verb
                 if(params.verbs.quiz.answer){
+                    //console.log(quiz.question)
                     this.defineStmt(quiz.question,'answer');
                 }
             })
@@ -656,8 +668,9 @@ constructor(store){
                    
             });       
     };
-    quizhandler(data){
+    quizhandler(data){ 
      quiz = new Quiz(data);   
+
      if(params.consoleLog.quizLog)console.log(quiz)
     }
 };
@@ -718,7 +731,8 @@ class SuperWrapper{
            
     };
     insert_(input){//helperfunction replace spaces with _underscore_
-        if(input.indexOf(' '))
+
+        if(input.indexOf(' ')>0)
         return (input.indexOf(' ') >0) ? input.split(' ').join('_'):input;
         else
         return (input.indexOf('-') >0) ? input.split('-').join('_'):input;
@@ -1153,6 +1167,7 @@ class Quiz{
         this.totalquestions =sw.var('cpQuizInfoTotalQuestionsPerProject');
         this.questionId=data.cpData.interactionID;
         this.question=null;
+        this.questionTitle=null;
         //this.questionNumber =data.cpdata.questionNumber+1||null;
         let labels = $('[id^=si]');
         let textArray=[];
@@ -1166,8 +1181,11 @@ class Quiz{
              textArray.push($(labels[label]).text());
     }
    });
-   //console.log(textArray)
+   //console.log(data)
+  
     if(typeof data.cpData.correctAnswer !='undefined'){
+        //console.log(data.cpData);
+       if(params.consoleLog.quizArray) console.log(textArray)
         this.correctAnswer = (()=>{
             let answers = data.cpData.correctAnswer;
             if(answers.indexOf(';'))answers = answers.split(';')
@@ -1179,9 +1197,13 @@ class Quiz{
             return answers;
              })();   
         this.correct = (()=>{return (JSON.stringify(this.correctAnswer)==JSON.stringify(this.selectedAnswer))?true:false})();
-        if(this.questionType=='long-fill-in'  || this.questionType =='fill-in'){
+             
+        switch (this.questionType){
+
+        case 'long-fill-in':
+        case 'fill-in':
                 this.questionTitle=textArray[0];
-                this.question= textArray[1];
+                this.question= textArray[2];
                 this.correctAnswer = (()=>{
                     let answers = data.cpData.correctAnswer;
                     if(answers.indexOf(':'))answers = answers.split(':')
@@ -1195,9 +1217,10 @@ class Quiz{
                 this.correct =(()=>{
                     return (this.correctAnswer.indexOf(this.selectedAnswer[0])>-1)?true:false;
                 })(); 
-            } 
-            else if(this.questionType==='matching'){
-                this.question = textArray[3];
+        break;
+        case 'matching':
+                this.questionTitle = textArray[1];
+                this.question = textArray[2];
                 let parse = textArray.slice(3,textArray.indexOf('Submit '))
                 //TODO:rewrite result cleaner
                 let result = parse.filter(check=> (check.indexOf('A)')))
@@ -1209,15 +1232,53 @@ class Quiz{
                 let  numOfChoices =this.correctAnswer.toString().split(',').length;
                 this.source=result.slice(result.length - numOfChoices,result.length);
                 this.target=result.slice(result.length-(numOfChoices+1)-numOfChoices,result.length-(numOfChoices+1))
-            }
+        break;
+        case 'choice':
+                this.question = textArray[2];
+                this.questionTitle = textArray[1];
+                textArray.slice(3,textArray.length).map(value=>{
+                    if (value.split(' ')[0] ==='Incorrect'  || value.split(' ')[0]==='Correct'){this.possibleAnswers.pop()}else{
+                        this.possibleAnswers.push(value)
+                    }
+                } )
+        break;
+
+        case 'true-false':
+                this.question = textArray[2];
+                this.questionTitle = textArray[1];
+                this.possibleAnswers=["true","false"];
+
+        break;
+        case 'sequencing':
+                this.question=textArray[2];
+                this.questionTitle = textArray[1];
+                
+                
+
+        break;
+        
+        case 'hotspot':
+                this.questionTitle = textArray[1];
+                this.question =textArray[2];
+        break;
+
+        case '':
+
+        break
+        default:
+            
+               
+        break;
         }
-        else this.correctAnswer,this.selectedAnswer,this.correct = null;
-   this.questionTitle = textArray[2]  || null;
-   (this.questionType==='sequencing')?this.question=textArray[2]||null:this.question = textArray[3] || null;
-   if(this.questionType ==='hotspot') this.question =textArray[1]||null;
-   if(this.questionType !='matching')this.possibleAnswers= (this.questionType==='sequencing')
-   ?this.possibleAnswers = textArray.slice(3,textArray.indexOf('Submit '))||null
-   :this.possibleAnswers = textArray.slice(4,textArray.indexOf('Submit '))||null;
+        
+        }
+       else this.correctAnswer,this.selectedAnswer,this.correct = null;
+
+ 
+
+//    if(this.questionType !='matching')this.possibleAnswers= (this.questionType==='sequencing')
+//    ?this.possibleAnswers = textArray.slice(3,textArray.indexOf('Submit '))||null
+//    :this.possibleAnswers = textArray.slice(4,textArray.indexOf('Submit '))||null;
 }
 };
 class Definitions{
@@ -1236,7 +1297,7 @@ constructor(){
                         quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
                         correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
                         return correctAnswer;
-                    } else return quiz.correctAnswer;
+                    } else return quiz.correctAnswer.toString()
                 })()
             ],
             "choices": 
@@ -1261,7 +1322,8 @@ constructor(){
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "true-false",
-            "correctResponsesPattern": [quiz.correctAnswer]
+            "correctResponsesPattern": quiz.correctAnswer,
+            "choices":quiz.possibleAnswers
         },
         id:xApiController.activityId
     });
@@ -1272,7 +1334,7 @@ constructor(){
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "long-fill-in",
             "correctResponsesPattern": [
-                "{case_matters=false}{lang=en}"+  (()=>{
+                (()=>{
                     if(quiz.correctAnswer.length>1){
                         let correctAnswer='';
                         quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
@@ -1284,31 +1346,51 @@ constructor(){
     },
     id:xApiController.activityId
 });
+this.fill_in = new TinCan.Activity( {"definition": {
+    "description": {
+        [params.display_en_lang[0]]: quiz.question
+    },
+    "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+    "interactionType": "fill-in",
+    "correctResponsesPattern": [
+        (()=>{
+            if(quiz.correctAnswer.length>1){
+                let correctAnswer='';
+                quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
+                correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
+                return correctAnswer;
+            } else return quiz.correctAnswer;
+        })()
+    ]
 
-    this.matching = (()=>{let def = new TinCan.Activity({"definition": {
+},
+id:xApiController.activityId
+});
+
+    this.matching = new TinCan.Activity({"definition": {
         "name":{[params.display_en_lang[0]]:quiz.question},
             "description": {
                 [params.display_en_lang[0]]: quiz.question
             }, 
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "matching",
-            "correctResponsesPattern": [
+            "correctResponsesPattern": 
                 // "ben[.]3[,]chris[.]2[,]troy[.]4[,]freddie[.]1"
                 (()=>{
                         let aAndb = quiz.correctAnswer.toString().split(',');
                         let correctAnswer='';
-                        quiz.source.map((answer,index)=>{
+                        if (quiz.source)quiz.source.map((answer,index)=>{
                             
                             correctAnswer=correctAnswer+`${answer.trim()}[.]${aAndb[index].substr(2,2)}[,]`});
                         correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
-                        return correctAnswer;
+                        return correctAnswer.toString();
                  
                 })()
-            ],
+            ,
             "source": 
                 (()=>{
                     let answers =[];
-                    quiz.source.map((answer,index)=>{
+                    if (quiz.source)quiz.source.map((answer,index)=>{
                        let tempAnswer={"id":`${answer.trim()}`,
                         "description":{
                             [params.display_en_lang[0]]:answer.trim()
@@ -1321,7 +1403,7 @@ constructor(){
             "target": 
             (()=>{
                 let answers =[];
-                quiz.target.map((answer,index)=>{
+                if(quiz.target)quiz.target.map((answer,index)=>{
                    let tempAnswer={"id":`${answer.trim()}`,
                     "description":{
                         [params.display_en_lang[0]]:answer.trim()
@@ -1329,34 +1411,15 @@ constructor(){
                 }
                     answers.push(tempAnswer)})
                 return answers
-        })()
+        })(),
     },
-    id:xApiController.activityId});
 
-return def;
-    })();
-
-    this.fill_in_the_blank = new TinCan.ActivityDefinition( {"definition": {
-            "description": {
-                [params.display_en_lang[0]]: quiz.question
-            },
-            "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
-            "interactionType": "fill-in",
-            "correctResponsesPattern": [
-                (()=>{
-                    if(quiz.correctAnswer.length>1){
-                        let correctAnswer='';
-                        quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
-                        correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
-                        return correctAnswer;
-                    } else return quiz.correctAnswer;
-                })()
-            ]
-        
-    },
     id:xApiController.activityId
-});
-    this.sequencing = new TinCan.ActivityDefinition({"definition": {
+
+    })
+
+    
+    this.sequencing = new TinCan.Activity({"definition": {
             "description": {
                 [params.display_en_lang[0]]: quiz.question
             },
@@ -1387,38 +1450,78 @@ return def;
     },
     id:xApiController.activityId
 });
-    this.likert= new TinCan.ActivityDefinition({"definition": {
+    this.likert= new TinCan.Activity({"definition": {
             "description": {
-                "[params.display_en_lang[0]]": quiz.question
+                [params.display_en_lang[0]]: quiz.question
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "likert",
-            "correctResponsesPattern": [
+            "correctResponsesPattern": 
              quiz.correctAnswer
-            ],
-            "scale": [
-                (()=>{
-                    let answers =[];
-                    quiz.possibleAnswers.map((answer,index)=>{
-                       let tempAnswer={"id":`${quiz.questionType}-${index+1}`,
-                        "description":{
-                            [params.display_en_lang[0]]:answer
-                        }
-                    }
-                  answers.push(tempAnswer)})
-                    return answers
-            })()
-            ]
+            
+           
         },
         id:xApiController.activityId
     });
-    this.hotspot= new TinCan.ActivityDefinition({"definition": {
+
+
+    // "definition": {
+    //     "description": {
+    //         [params.display_en_lang[0]]: quiz.question
+    //     },
+    //     "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+    //     "interactionType": "likert",
+    //     "correctResponsesPattern": [
+    //         "likert_3"
+    //     ],
+    //     "scale": [
+    //         {
+    //             "id": "likert_0", 
+    //             "description": {
+    //                 "en-US": "It's OK"
+    //             }
+    //         },
+    //         {
+    //             "id": "likert_1", 
+    //             "description": {
+    //                 "en-US": "It's Pretty Cool"
+    //             }
+    //         },
+    //         {
+    //             "id": "likert_2", 
+    //             "description": {
+    //                 "en-US": "It's Damn Cool"
+    //             }
+    //         },
+    //         {
+    //             "id": "likert_3", 
+    //             "description": {
+    //                 "en-US": "It's Gonna Change the World"
+    //             }
+    //         }
+    //     ]
+    // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    this.hotspot= new TinCan.Activity({"definition": {
             "description": {
                 [params.display_en_lang[0]]: quiz.question
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "choice",
-            "correctResponsesPattern": [
+            "correctResponsesPattern": 
                 (()=>{
                     if(quiz.correctAnswer.length>1){
                         let correctAnswer='';
@@ -1427,7 +1530,7 @@ return def;
                         return correctAnswer;
                     } else return quiz.correctAnswer;
                 })()
-            ],
+            ,
             "choices": 
                 (()=>{
                     let answers =[];
@@ -1445,6 +1548,12 @@ return def;
     }) ;
 }
 returnDefinition(type){
+    if(type ==='true-false')type = 'true_false';
+    if(type ==='long-fill-in')type ='long_fill_in';
+    if(type === 'fill-in')type ='fill_in';
+
+    console.log(this)
+
     return this[type];
 };
 };

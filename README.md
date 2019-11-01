@@ -96,6 +96,8 @@ Check out video available at [confernce call walk through](https://www.youtube.c
  10/12 All versions of controller updated to 1.0.5.1, login screen now sizes correctly in responsive environment (note it happens on load, switching to responsive after loading on desktop will not work - load in the resolution you will stay with)
 
  10/21 1.0.6 - updated comments in params to assist in customizing login page
+
+ 10/31 1.0.7 - all quiz question types are now working and reporting as CMI objects with the exception of likert - Also need to add the finished quiz verb, report scoring for each individual question and attach scoring to the finished quiz statement in results then quizzin will be done
  
  
 
