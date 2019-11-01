@@ -97,7 +97,9 @@ Check out video available at [confernce call walk through](https://www.youtube.c
 
  10/21 1.0.6 - updated comments in params to assist in customizing login page
 
- 10/31 1.0.7 - all quiz question types are now working and reporting as CMI objects with the exception of likert - Also need to add the finished quiz verb, report scoring for each individual question and attach scoring to the finished quiz statement in results then quizzin will be done
+ 10/31 1.0.7 - all quiz question types are now working and reporting as CMI objects with the exception of likert - Also need to add the finished quiz verb, report scoring for each individual question and attach scoring to the finished quiz statement in results then quizzin will be done.
+
+ An explanation of how quiz tracking works - The captivate API produces info about the quiz such as quiz name,  answer provided, question kind, scoring, attemps type and some othre useful info.  However, the API does not provide the actual question or answers (frustrating)....to have proper CMI5 statements with correct response pattern and robust information this is needed info.  The work around that is employed here is parsing the DOM.  In non tech talk the wrapper takes a screen shot and puts all of the differen informational pieces into an ordered list (an array).   I used the default set up for each question that captivate provides when you create a new quiz slide. So what does this mean for you?  Don't delete things such as slide title or in the case of matching the Column1 or Column2 headers.  Reason being is it pulls the information from the particular position in the array, but if you delete it the array list will now be in a different order so statements will break or look awfully wonky(wrong info in certain fields).  That being said I did employ some coding magic and logic to allow for adding addtional multiple choice selections, or hotspot type questions.  I tried to be as intuitive as possible.  If you want to use the wrapper in conjunction with quizzing please do, but also audit your statements for accuracy and please let me know if you find 'breaking' circumstances.
  
  
 
