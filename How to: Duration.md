@@ -3,7 +3,7 @@
 
 This could be used for a variety of things, but this walkthrough is designed to capture the duration of focus and unfocus event as an example.  I apologize if the code is over commented, but I know we have lots of .js beginners and I used to hate when I didn't understand what or why code did what it did.
 
-You can access a published versoin of this demo at
+You can access a published version of this demo at
 
 <http://www.brianfloyd.me/duration_example>
 
@@ -12,7 +12,7 @@ The focus/unfocus function was taken more or less from this post on stack overfl
 <https://stackoverflow.com/questions/1060008is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active>
 
 ```javascript
-    //this grabs the time when the browser was openened
+    //this grabs the time when the browser was openened newDate() is a default .js method
     let timeWhenWeFirstStartListening = new Date().getTime();
     /*this declares the unfocusTime and focusTime variables 
     Note: These are set up as global varaiable which is not good practice or how to 
