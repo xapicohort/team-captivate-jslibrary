@@ -17,7 +17,6 @@ The focus/unfocus function was taken more or less from this post on stack overfl
     /*this declares the unfocusTime and focusTime variables 
     Note: These are set up as global varaiable which is not good practice or how to 
     handle a production implementation*/    
-    //implementation
     let unfocusTime;
     let focusTime;
 
