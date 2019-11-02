@@ -22,7 +22,8 @@ The focus/unfocus function was taken more or less from this post on stack overfl
 
     /*functon focus/unfocus listener it also takes a callback.  A callback is just a function passed
     into another function and runs when called.  In this case when the focus or unfoucus event fires
-    the callback executes.  This callback is defined in the next DOMListener function call below the convertToISO helper functoin defintion*/
+    the callback executes.  This callback is defined in the next DOMListener function call below
+    the convertToISO helper functoin defintion*/
     const DOMListener = (callback)=>{
     $('.start-time').text(timeWhenWeFirstStartListening);
     let visible = true;
