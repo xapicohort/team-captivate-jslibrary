@@ -3,23 +3,28 @@
 //TODO: look for instances of toLowerCase();
 //MATCHING QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are all working with the exception of likert
-console.log('SuperWrapper v1.0.7');
+console.log('SuperWrapper v1.0.8');
 
 const customVerbPrefix="http://id.superwrapper.com/verb/";
+
+
+
 const params = {
     "environment":"production",
     "reportingToLrs":true,
     "Validate_email_address":false,//non-working feature
     "display_en_lang":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
-                access:[true,'accessed course','http://activitystrea.ms/schema/1.0/access'],
-                enter:[true,'entered slide',`${customVerbPrefix}enteredSlide`],
-                return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
-                view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
+                access:[false,'accessed course','http://activitystrea.ms/schema/1.0/access'],
+                enter:[false,'entered slide',`${customVerbPrefix}enteredSlide`],
+                return:[false,'returned to','http://activitystrea.ms/schema/1.0/return'],
+                view:[false, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
                 complete:[true,'completed course','http://activitystrea.ms/schema/1.0/complete'],
                 open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
                 pressClickBox:[true, 'clicked box'],//same verb as above
+                focus:[true,'focused','http://id.tincanapi.com/verb/focused'],
+                unfocus:[true,'unfocused','http://id.tincanapi.com/verb/unfocused'],
                 experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
             "quiz":
             {
@@ -44,7 +49,7 @@ const params = {
                 statements:true,
                 quickLogVerbActivity:false,
                 quizLog:false,
-                quizArray:false,
+                quizArray:true,
                 videoLog:true,
                 eventListener:false
     },
@@ -256,6 +261,16 @@ constructor(store){
             this.activityDescription=`Slide ${this.currentSlideIndex} Video - ${passedActivity}`
             this.videoDuration=($(this.video)[0].duration);
         break;
+       case 'focus':
+       case 'unfocus':
+            
+            this.type = this.activityType.slide
+            this.activityDescription = `Slide ${this.activity} had a focus change`; 
+            this.totalDurationTime = (this.focusEventTime);
+
+       break;
+       default:
+           break;
         }
     this.createStmt();
     this.prepareStmtToSend();
@@ -273,7 +288,7 @@ constructor(store){
          
             let definitions = new Definitions();
 
-            console.log(definitions.returnDefinition(type))
+            //console.log(definitions.returnDefinition(type))
             
             return definitions.returnDefinition(type);
         } else{
@@ -390,11 +405,13 @@ constructor(store){
         return new TinCan.Result({
             "score": {
                 "scaled": (()=>{
-                    if(quiz.correct) return (1.0) 
+                    if(quiz.correct) return Number(`.${(quiz.totalPoints/quiz.quizPossiblePoints).toFixed(2).split('.')[1]}`);
                     else return 0; })(),
                 "raw": (()=>{
-                    if(quiz.correct) return 1 
-                    else return 0; })()
+                    if(quiz.correct) return quiz.totalPoints 
+                    else return 0; })(),
+                "min":0,
+                "max":quiz.possiblePoints
               },
               "success": quiz.correct,
               "completion": true,
@@ -512,7 +529,7 @@ constructor(store){
     };
     sendStmt(){
        let stmt =this.stmt;
-       console.log(stmt);
+       //console.log(stmt);
         if (this.ie===true  || params.reportingToLrs ===false){
             if(params.consoleLog.statements) console.log("%c🖨 Reporting off console only","color:red",{stmt});
             if(params.consoleLog.quickLogVerbActivity)console.log(stmt.verb.display['en-US'],stmt.target.definition.name['en-US']);
@@ -541,9 +558,12 @@ constructor(store){
     };
     cpListeners(){
             window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER',e=>{
+console.log('entered slide')
             this.slideVids=[];
             this.video=null;
             //sw.typeText();
+    
+            this.quizIdentifier = e.Data.qs
             this.quizhandler(e);
             if(sw.var('cpInQuizScope')==0){this.quizStarted = false}
             if(sw.var('cpInQuizScope')==true  && !this.quizStarted){
@@ -645,8 +665,67 @@ constructor(store){
             })
             window.cpAPIEventEmitter.addEventListener('CPAPI_VARIABLEVALUECHANGED','v_increment',e=>{
             });
+            this.DOMListener((focus)=>{
+             
+                let milliSeconds
+                if(focus){
+                   
+                    this.refocusStartTime=new Date().getTime();
+                    milliSeconds = Math.floor((this.refocusStartTime-this.unfocusStartTime));
+                    this.focusEventTime = sw.convertMilliSecondsToISO(milliSeconds);
+                    this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'focus')}
+                else {
+                    
+                    this.unfocusStartTime = new Date().getTime();
+                    if(!this.refocusStartTime) {milliSeconds = Math.abs((this.slideEnterTime - this.unfocusStartTime))}
+                    else  { milliSeconds = Math.floor((this.unfocusStartTime- this.refocusStartTime))
+                    
+                    
+                    }
+                    this.focusEventTime = sw.convertMilliSecondsToISO(milliSeconds);
+                    this.defineStmt(sw.var('cpInfoCurrentSlideLabel'), 'unfocus')}
+                
+            })
       
     };
+    DOMListener(callback){
+            let visible = true;
+            if (!callback) {
+                throw new Error('no callback given');
+            }
+            function focused() {
+                if (!visible) {
+                    callback(visible = true);
+                }
+            }
+            function unfocused() {
+                if (visible) {
+                    callback(visible = false);
+                }
+            }
+        
+            // Standards:
+            if ('hidden' in document) {
+                document.addEventListener('visibilitychange',
+                    function() {(document.hidden ? unfocused : focused)()});
+            }
+            if ('mozHidden' in document) {
+                document.addEventListener('mozvisibilitychange',
+                    function() {(document.mozHidden ? unfocused : focused)()});
+            }
+            if ('webkitHidden' in document) {
+                document.addEventListener('webkitvisibilitychange',
+                    function() {(document.webkitHidden ? unfocused : focused)()});
+            }
+            if ('msHidden' in document) {
+                document.addEventListener('msvisibilitychange',
+                    function() {(document.msHidden ? unfocused : focused)()});
+            }
+            // All others:
+            window.onpageshow = window.onfocus = focused;
+            window.onpagehide = window.onblur = unfocused;
+        
+    }
     appendVideoListener(totalVids){
         //checkLoad ensures that at least one video element exists on the slide prior to running
             sw.checkLoad('video', ()=>{
@@ -669,9 +748,14 @@ constructor(store){
             });       
     };
     quizhandler(data){ 
-     quiz = new Quiz(data);   
+     quiz = new Quiz(data);  
+    //console.log(data) 
+ 
 
-     if(params.consoleLog.quizLog)console.log(quiz)
+    //trecs.map((trec)=>{if(trec.link===data.Data.id)console.log(trec.text)})
+
+    
+    // if(params.consoleLog.quizLog  && quiz.questionType==='likert')console.log(quiz)
     }
 };
 class SuperWrapper{
@@ -1013,6 +1097,7 @@ class Learner{
 class VideoObject{
     constructor(vidObj){
         this.video =vidObj;
+        console.log(this.video)
         this.duration = vidObj.duration;
         this.name = vidObj.cpVideo.id;
         this.pauseTime = [];
@@ -1094,7 +1179,6 @@ class VideoObject{
             })    
             }
 };
-
 class Verbs{
     constructor(){
         this.enter = params.verbs.enter[1] || "entered slide"
@@ -1138,6 +1222,10 @@ class Verbs{
         this.press=params.verbs.pressButton[1] ||'pressed the button';
         this.pressClickBox=params.verbs.pressClickBox[1] || 'pressed the click box';
         this.pressId = sw.uriCheck(params.verbs.pressButton[2]) || 'http://future-learning.info/xAPI/verb/pressed';
+        this.focus = params.verbs.focus[1] || 'focused';
+        this.unfocus =params.verbs.unfocus[1] || 'unfocus';
+        this.focusId = sw.uriCheck(params.verbs.focus[2]) || 'http://id.tincanapi.com/verb/focused';
+        this.unfocusId = sw.uriCheck(params.verbs.unfocus[2]) || 'http://id.tincanapi.com/verb/unfocused';
     }
 };
 //define activity types
@@ -1165,11 +1253,15 @@ class Quiz{
         this.quizId=params.quizId || xApiController.parentId;
         this.questionType = sw.var('cpQuizInfoQuestionSlideType');
         this.totalquestions =sw.var('cpQuizInfoTotalQuestionsPerProject');
+        this.totalPoints = sw.var('cpQuizInfoPointsPerQuestionSlide');
+        this.quizPossiblePoints =sw.var('cpQuizInfoTotalQuizPoints');
+        this.possiblePoints =sw.var('cpQuizInfoPointsPerQuestionSlide');
         this.questionId=data.cpData.interactionID;
         this.question=null;
         this.questionTitle=null;
         //this.questionNumber =data.cpdata.questionNumber+1||null;
         let labels = $('[id^=si]');
+
         let textArray=[];
         labels.filter(label=>{
          if($(labels[label]).text()!='') {
@@ -1199,13 +1291,12 @@ class Quiz{
         this.correct = (()=>{return (JSON.stringify(this.correctAnswer)==JSON.stringify(this.selectedAnswer))?true:false})();
              
         switch (this.questionType){
-
         case 'long-fill-in':
         case 'fill-in':
                 this.questionTitle=textArray[0];
                 this.question= textArray[2];
                 this.correctAnswer = (()=>{
-                    let answers = data.cpData.correctAnswer;
+                    let answers = data.cpData.correctAnswer.toLowerCase();
                     if(answers.indexOf(':'))answers = answers.split(':')
                     return answers;
                 })();
@@ -1215,7 +1306,7 @@ class Quiz{
                     return answers;
                      })();
                 this.correct =(()=>{
-                    return (this.correctAnswer.indexOf(this.selectedAnswer[0])>-1)?true:false;
+                    return (this.correctAnswer.indexOf(this.selectedAnswer[0].toLowerCase())>-1)?true:false;
                 })(); 
         break;
         case 'matching':
@@ -1247,14 +1338,10 @@ class Quiz{
                 this.question = textArray[2];
                 this.questionTitle = textArray[1];
                 this.possibleAnswers=["true","false"];
-
         break;
         case 'sequencing':
                 this.question=textArray[2];
                 this.questionTitle = textArray[1];
-                
-                
-
         break;
         
         case 'hotspot':
@@ -1262,9 +1349,11 @@ class Quiz{
                 this.question =textArray[2];
         break;
 
-        case '':
-
-        break
+        case 'likert':
+                this.questionTitle=textArray[1];
+                this.question = textArray[2];
+                this.possibleAnswers=cp.model.data[`${xApiController.quizIdentifier}`].rsv
+        break;
         default:
             
                
@@ -1367,43 +1456,30 @@ this.fill_in = new TinCan.Activity( {"definition": {
 id:xApiController.activityId
 });
 
-    this.matching = new TinCan.Activity({"definition": {
-        "name":{[params.display_en_lang[0]]:quiz.question},
-            "description": {
-                [params.display_en_lang[0]]: quiz.question
-            }, 
-            "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
-            "interactionType": "matching",
-            "correctResponsesPattern": 
-                // "ben[.]3[,]chris[.]2[,]troy[.]4[,]freddie[.]1"
-                (()=>{
-                        let aAndb = quiz.correctAnswer.toString().split(',');
-                        let correctAnswer='';
-                        if (quiz.source)quiz.source.map((answer,index)=>{
-                            
-                            correctAnswer=correctAnswer+`${answer.trim()}[.]${aAndb[index].substr(2,2)}[,]`});
-                        correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
-                        return correctAnswer.toString();
-                 
-                })()
-            ,
-            "source": 
-                (()=>{
-                    let answers =[];
+this.matching = new TinCan.Activity({"definition": {
+    "name":{[params.display_en_lang[0]]:quiz.question},
+        "description": {
+            [params.display_en_lang[0]]: quiz.question
+        }, 
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "interactionType": "matching",
+        "correctResponsesPattern": 
+            // "ben[.]3[,]chris[.]2[,]troy[.]4[,]freddie[.]1"
+            (()=>{
+                    let aAndb = quiz.correctAnswer.toString().split(',');
+                    let correctAnswer='';
                     if (quiz.source)quiz.source.map((answer,index)=>{
-                       let tempAnswer={"id":`${answer.trim()}`,
-                        "description":{
-                            [params.display_en_lang[0]]:answer.trim()
-                        }
-                    }
-                        answers.push(tempAnswer)})
-                    return answers
+                        
+                        correctAnswer=correctAnswer+`${answer.trim()}[.]${aAndb[index].substr(2,2)}[,]`});
+                    correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
+                    return correctAnswer.toString();
+             
             })()
-             ,
-            "target": 
+        ,
+        "source": 
             (()=>{
                 let answers =[];
-                if(quiz.target)quiz.target.map((answer,index)=>{
+                if (quiz.source)quiz.source.map((answer,index)=>{
                    let tempAnswer={"id":`${answer.trim()}`,
                     "description":{
                         [params.display_en_lang[0]]:answer.trim()
@@ -1411,12 +1487,25 @@ id:xApiController.activityId
                 }
                     answers.push(tempAnswer)})
                 return answers
-        })(),
-    },
+        })()
+         ,
+        "target": 
+        (()=>{
+            let answers =[];
+            if(quiz.target)quiz.target.map((answer,index)=>{
+               let tempAnswer={"id":`${answer.trim()}`,
+                "description":{
+                    [params.display_en_lang[0]]:answer.trim()
+                }
+            }
+                answers.push(tempAnswer)})
+            return answers
+    })(),
+},
 
-    id:xApiController.activityId
+id:xApiController.activityId
 
-    })
+})
 
     
     this.sequencing = new TinCan.Activity({"definition": {
@@ -1456,64 +1545,24 @@ id:xApiController.activityId
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "likert",
-            "correctResponsesPattern": 
-             quiz.correctAnswer
-            
-           
+            "correctResponsesPattern": quiz.possibleAnswers,
+             "scale":(()=>{
+                let answers =[];quiz.possibleAnswers.map((answer,index)=>{
+                let tempAnswer={"id":`${quiz.questionType}-${index+1}`,
+                 "description":{
+                     [params.display_en_lang[0]]:answer
+                 }
+             }
+                 answers.push(tempAnswer)})
+               
+             return answers
+     })() 
+
         },
+       
         id:xApiController.activityId
     });
-
-
-    // "definition": {
-    //     "description": {
-    //         [params.display_en_lang[0]]: quiz.question
-    //     },
-    //     "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
-    //     "interactionType": "likert",
-    //     "correctResponsesPattern": [
-    //         "likert_3"
-    //     ],
-    //     "scale": [
-    //         {
-    //             "id": "likert_0", 
-    //             "description": {
-    //                 "en-US": "It's OK"
-    //             }
-    //         },
-    //         {
-    //             "id": "likert_1", 
-    //             "description": {
-    //                 "en-US": "It's Pretty Cool"
-    //             }
-    //         },
-    //         {
-    //             "id": "likert_2", 
-    //             "description": {
-    //                 "en-US": "It's Damn Cool"
-    //             }
-    //         },
-    //         {
-    //             "id": "likert_3", 
-    //             "description": {
-    //                 "en-US": "It's Gonna Change the World"
-    //             }
-    //         }
-    //     ]
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
     this.hotspot= new TinCan.Activity({"definition": {
             "description": {
@@ -1551,8 +1600,9 @@ returnDefinition(type){
     if(type ==='true-false')type = 'true_false';
     if(type ==='long-fill-in')type ='long_fill_in';
     if(type === 'fill-in')type ='fill_in';
+    if(type=== 'likert')quiz.correct=null;
+    if(quiz.correctAnswers)console.log(this)
 
-    console.log(this)
 
     return this[type];
 };
