@@ -8,7 +8,7 @@ You can access a published version of this demo at
 <http://www.brianfloyd.me/duration_example>
 
 
-The focus/unfocus function was taken more or less from this post on stack overflow-
+The focus/unfocus function (DOMListener) was taken more or less from this post on stack overflow-
 <https://stackoverflow.com/questions/1060008is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active>
 
 ```javascript
