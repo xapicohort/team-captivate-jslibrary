@@ -85,10 +85,10 @@ DOMListener(focus=>{
             unfocusTime = new Date().getTime();
             //Dom output
             $('.unfocus').text(unfocusTime);
-            /*Now we just need to get the difference timeWhenWeFirstStartListening to unfocusTime
+            /*Now we just need to get the difference timeWhenWeFirstStartListening/focusTime to unfocusTime
              Math.abs() is a method that turns negative integer into a positive integer 
              (absolute value of a number) .  For instace if you start at 12:00 and unfocused 
-            at 12:03 the deficit would be -3 minutes but have and absoulute time of 3 total minutes*/
+             at 12:03 the deficit would be -3 minutes but have and absoulute time of 3 total minutes*/
             let milliseconds = Math.abs((focusTime - unfocusTime));
             //Dom output
             $('.delta').text(milliseconds)
