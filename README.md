@@ -103,7 +103,7 @@ Check out video available at [confernce call walk through](https://www.youtube.c
  
   11/2 1.0.8 Likert now works making all quiz types working with the exception of matching.  Matching did work but I made some breaking change and can’t seem to find my bug.
 
- The other feature added and I am excited aboou this one is focus and unfocus....Often we wonder if users are checknig their email or multitasking during elearning courses.....the focus, unfocus statement will tell you when they leave, and when they come back complete with duration (how long where they unfocused, or how long were they focus before unfocusing)
+ The other feature added and I am excited about this one is focus and unfocus....Often we wonder if users are checknig their email or multitasking during elearning courses.....the focus, unfocus statement will tell you when they leave, and when they come back complete with duration (how long where they unfocused, or how long were they focus before unfocusing)
  
 
  
