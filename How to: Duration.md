@@ -81,7 +81,7 @@ DOMListener(focus=>{
             this if statement sets the unfocusTime to timeWhenWeFirstStartListening using truthy 
             falsy - if declared variable is undefined do this else if it has a value do that*/
             if(!focusTime) {focusTime = timeWhenWeFirstStartListening}
-            //else we need to update to the most current unfocus time
+            //we need to get the time a time on unfocus
             unfocusTime = new Date().getTime();
             //Dom output
             $('.unfocus').text(unfocusTime);
