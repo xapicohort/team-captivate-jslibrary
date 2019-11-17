@@ -71,7 +71,7 @@ We have to make changes to either index.html or index_scorm.html from captivate 
               
               -Look for the <script> tag
 
-              Insert 10 - 28 below
+              Insert the following lines after the script, ensuring not to overwrite anything
 
 ```javascript
 /********************
