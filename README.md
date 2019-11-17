@@ -33,7 +33,12 @@ In captivate you have to set up these user variables for your LRS:
 
 ```v_prodEndpoint = [set to your LRS endpoint]```
                     
-Note:Included Captivate example file has these set up with our cohorts Watershed LRS
+Note:Included Captivate example file has these set up with our cohorts Watershed LRS. Note you can also use these variables and toggle between a sandbox and production environment.  The sandox equvalent are:
+```v_key = [ set to your LRS Key]```
+
+```v_secret = [ set to your LRS Secret ]```
+
+```v_endpoint = [set to your LRS endpoint]```
                     
  ### Step 3: 
  
@@ -59,21 +64,60 @@ Copy this repo (use clone button and downloaad zip for easiest access)
 
 We have to make changes to either index.html or index_scorm.html from captivate publish files
 
-              -From this repo folder superWrapperSource open the indexSource.html or index_scormSource.html in 
-               your favorite code editor
+            
                
-              -Open the index.html or index_scorm.html in the same code editor
+              -Open the index.html or index_scorm.html in the same code editor from Captivate
               
-              Lines 15 - 33 must be copied and pasted from indexSource.html to index.html
+              -Look for the <script> tag
+
+              Insert 10 - 28 below
+
+```javascript
+/********************
+**  SuperWrapper  **
+*******************/
+//insert this code to load all the appropriate packages
+
+var controllerVersion, tincan;
+
+/*SuperWrapper is not compantible with Microsoft IE, this 
+  causes it to display warning message and not load*/
+
+if(navigator.appName  !== "Microsoft Internet Explorer"){
+/*Load the controller file and tincan library*/	
+	controllerVersion= "assets/js/controller.js";
+	tincan = "assets/js/tincan.js"
+}else{
+	controllerVersion ="assets/js/controllerNoIE.js";
+	cpm = null; 
+}
+//end of inserted code
+/********************
+**  SuperWrapper  **
+********************/
+```
               
 ### Step 6 : 
 
-Find a line similar to this in your index.hml (around line 120 but can vary) 
-  
-            	var lJSFiles = [  'assets/js/jquery-1.11.3.min.js','assets/js/CPM.js' ];
-              
-              Replace with lines 128 - 137 from the superWrapperSource folder indexSource.html (same as above)
+        -Find a line similar to this in your index.hml (around line 120 but can vary) - 
+        
 
+  ```javascript
+        var lJSFiles = [  'assets/js/jquery-1.11.3.min.js','assets/js/CPM.js' ]; 
+```
+ 'var lJSFiles'   can be searched
+        -On the line after paste this code
+```javascript
+	/*******************
+	**  SuperWrapper  **
+	*******************/
+	lJSFiles.push(tincan,controllerVersion)
+	/*this is appending the variables (files to load) we set up top
+	*******************
+	**  SuperWrapper **
+    ********************/
+```           
+             
 ### Step 7:  
 
 Your good to go!
@@ -115,8 +159,6 @@ Check out video available at [confernce call walk through](https://www.youtube.c
 
 Moving Forward I will continue to update this read.me with version update release info.  All feature requests, bugs and defects will now be reported using the 'issues' feature in this Git repo.  Please feel free to contribute any issues or feature requests you may have.
 
-
- 
 
  
  

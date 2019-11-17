@@ -4,33 +4,32 @@
 <meta name='viewport' content='initial-scale = 1, minimum-scale = 1, maximum-scale = 1'/>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="x-ua-compatible" content="IE=10">
-<title>SuperWrapper</title>
+<title>superWrapper - Captivate Demo</title>
 <style type="text/css">#initialLoading{background:url(assets/htmlimages/loader.gif) no-repeat center center;background-color:#ffffff;position:absolute;margin:auto;top:0;left:0;right:0;bottom:0;z-index:10010;}</style>
-
 <script>
+/********************
+**  SuperWrapper  **
+*******************/
+//insert this code to load all the appropriate packages
+var controllerVersion, tincan;
+/*SuperWrapper is not compantible with Microsoft IE, this 
+  causes it to display warning message and not load*/
+if(navigator.appName  !== "Microsoft Internet Explorer"){
+/*Load the controller file and tincan library*/	
+	controllerVersion= "assets/js/controller.js";
+	tincan = "assets/js/tincan.js"
+}else{
+	controllerVersion ="assets/js/controllerNoIE.js";
+	cpm = null; 
+}
+//end of inserted code
+/********************
+**  SuperWrapper  **
+********************/
 
 var deviceReady = false;
 var initCalled = false ;
 var initialized = false;
-//********************
-//**  SuperWrapper  **
-//********************
-//insert this code to load all the appropriate packages
-var controllerVersion, tincan,jq,cpm;
-if(navigator.appName  !== "Microsoft Internet Explorer"){
-	controllerVersion= "assets/js/controller.js";
-	tincan = "assets/js/tincan.js"
-	cpm ="assets/js/CPM.js";
-	//jq='assets/js/jquery-1.11.3.min.js';
-	jq='https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js'
-}else{
-	controllerVersion ="assets/js/controllerNoIE.js";
-	cpm = null; //cause IE not to load
-}
-//end of inserted code
-//********************
-//**  SuperWrapper  **
-//********************
 
 function onBodyLoad()
 {
@@ -73,19 +72,8 @@ function initializeCP()
 	}
 	
 	cpInit();
-
-	initialized = true;
-//********************
-//**  SuperWrapper  **
-//********************
-//removes play button on mobile devices
-
 	cp.movie.play();
-//end insterted code
-//********************
-//**  SuperWrapper  **
-//********************
-
+	initialized = true;
 }
 
 </script>
@@ -125,15 +113,20 @@ function initializeCP()
 							lCSSLoaded = true;
 							constructDIVs();
 						});
-						//********************
-						//**  SuperWrapper  **
-						//********************
-						//var lJSFiles = [  'assets/js/jquery-1.11.3.min.js','assets/js/CPM.js' ];
-						var lJSFiles = [  jq,tincan,controllerVersion,cpm ];
-						//this is loading all the variables we set up top
-						//********************
-						//**  SuperWrapper  **
-						//********************
+					  
+						var lJSFiles = [  'assets/js/jquery-1.11.3.min.js','assets/js/CPM.js' ];
+						/*******************
+						**  SuperWrapper  **
+						*******************/
+						lJSFiles.push(tincan,controllerVersion)
+						/*this is appending the variables (files to load) we set up top
+						*******************
+						**  SuperWrapper  **
+						********************/
+
+
+
+					
 						cpXHRJSLoader.js(lJSFiles,function()
 						{
 							//console.log("js loaded");
@@ -141,7 +134,7 @@ function initializeCP()
 							var imagesJSONFiles = [ 'dr/imgmd.json' ];
 							cpXHRJSLoader.loadImagesJSON(imagesJSONFiles,function(imageToJSONPathMap){
 								cp.imageToJSONPathMap = imageToJSONPathMap;
-								var imageJSONFiles = [ 'dr/img1.json','dr/img2.json','dr/img3.json','dr/img4.json','dr/img5.json' ];
+								var imageJSONFiles = [ 'dr/img1.json' ];
 								if(window.location.protocol.substr(0,4) == "file")
 									cpXHRJSLoader.preloadURLs(imageJSONFiles, constructDIVs);
 								lJSLoaded = true;
