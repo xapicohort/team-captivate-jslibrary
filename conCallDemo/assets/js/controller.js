@@ -2,42 +2,39 @@
       
 //TODO: look for instances of toLowerCase();
 //MATCHING QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
-//NOTE:Quiz results are all working with the exception of likert
-console.log('SuperWrapper v1.0.8');
+//NOTE:Quiz results are all working with the exception of matching
+
 
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
-    "environment":"production",
-    "reportingToLrs":true,
-    "Validate_email_address":false,//non-working feature
-    "display_en_lang":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
+    "display_language":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
-                access:[false,'accessed course','http://activitystrea.ms/schema/1.0/access'],
-                enter:[false,'entered slide',`${customVerbPrefix}enteredSlide`],
-                return:[false,'returned to','http://activitystrea.ms/schema/1.0/return'],
-                view:[false, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
+                access:[true,'accessed course','http://activitystrea.ms/schema/1.0/access'],
+                enter:[true,'entered',`${customVerbPrefix}enteredSlide`],
+                return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
+                view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
                 complete:[true,'completed course','http://activitystrea.ms/schema/1.0/complete'],
-                open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
+                open: [false,'opened','http://activitystrea.ms/schema/1.0/open'],
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
                 pressClickBox:[true, 'clicked box'],//same verb as above
                 focus:[true,'focused','http://id.tincanapi.com/verb/focused'],
                 unfocus:[true,'unfocused','http://id.tincanapi.com/verb/unfocused'],
-                experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
+                experience:[false, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
             "quiz":
             {
                 start:[true,'started','http://activitystrea.ms/schema/1.0/start'],
                 skip:[true,'skipped',"http://id.tincanapi.com/verb/skipped"],
                 answer:[true,'answered',"http://adlnet.gov/expapi/verbs/answered"],
                 review:[true,'reviewed','https://brindlewaye.com/xAPITerms/verbs/reviewed'],
-                finish:[true,'completed','http://activitystrea.ms/schema/1.0/complete']
+                finish:[true,'finished','${customVerbPrefix}/finished']
             },
             "video":
             {
                 play:[true,'played','http://activitystrea.ms/schema/1.0/play'],
                 pause:[true,'paused', "http://id.tincanapi.com/verb/paused"],
                 scrub:[true,'scrubbed', `${customVerbPrefix}scrubbed`],
-                mute:[true,'scrubbed', `${customVerbPrefix}muted`],
-                unmute:[true,'scrubbed', `${customVerbPrefix}unmuted`],
+                mute:[true,'muted', `${customVerbPrefix}muted`],
+                unmute:[true,'unmuted', `${customVerbPrefix}unmuted`],
                 adjustVolume:[true,'adjusted volume',`${customVerbPrefix}adjustVolume`],
                 watch: [false,'watched','http://activitystrea.ms/schema/1.0/watch']
             },
@@ -46,27 +43,41 @@ const params = {
                 statements:true,
                 quickLogVerbActivity:false,
                 quizLog:false,
-                quizArray:true,
+                quizArray:false,
                 videoLog:true,
-                eventListener:false
+                eventListener:true,
+                lrs:false,
+                version:true
     },
     "login":{
-                loginMessage:null,//this is the message displayed below email entry box
-                placeholderText:null,//this is the placeholder for the email entry box 
-                skipEmail:false,//when set to skip email button will not show
-                skipEmailValue:null,//if skip email buttton is turn on this is the email address it will return
-                invalidMsg:null//this is the plaeholder text that will be displayed if incorrect emal was displayed
+                Use_custom_login_messages:true,
+                login_message:null,//this is the message displayed below email entry box
+                placeholder_text:null,//this is the placeholder for the email entry box 
+                Allow_user_to_skip_email:false,//when set to true skip email button will not show
+                skip_email_default_value:null,//if skip email buttton is turn on this is the email address it will return
+                invalid_email_placholder_Message:null//this is the plaeholder text that will be displayed if incorrect emal was displayed
 
     },
-    "quizName":null,
-    "quizId":null,//uses baseID-ActivityName
+    "lrsSettings":{
+        reportingToLrs:true,
+        production:true,
+        sandbox_key:null,
+        sandbox_endpoint:null,
+        sandbox_secret:null,
+        production_secret:null,
+        production_key:null,
+        production_endpoint:null    
+    
+    },   
+    "quizName": 'test quiz replacement name',
+    "quizId":`http://quizid/test`,//uses baseID-ActivityName
     "remove_play_button_on_mobile":true,
     "parentName":null,
     "baseId":null,//uses base URL and path by default but can be defined to custom URI
     "returnToLastSlideVisited":true,//TODO:write query to check last slide visited
-    "sw_reloadWebObject":"Prefacing a clickbox or button with this title will force a refresh of all active iFrames",
-    "xapi_":"Prefacing a button or clickbox with this title will track button interactions"
 };
+
+if(params.consoleLog.version)console.log('SuperWrapper v1.1.0');
 //TODO:put it regex check for valid IRI for all passed paramter ID's, set to null if invlaid so it defaults
 let xApiController,user,sw,quiz;
 function init(){
@@ -112,6 +123,7 @@ constructor(store){
         this.parentDescription =sw.var('cpInfoDescription');
         this.activityDescription='null';
         this.slideEnterTime = null;
+        this.menuFlag = false;
         this.pauseTime=null;
         this.video=null;
         this.videoDuration=null;
@@ -120,6 +132,10 @@ constructor(store){
         this.groupName = null;
         this.groupId=null;
         this.quizParent=null;
+        this.quizStartTime=null;
+        this.quizFinishTime=null;
+        this.quizFinalScore = null;
+        this.quizPossibleScore=null;
         this.actorName = user.learner.name;
         this.actorEmail = user.learner.id;
         this.registrationId =(()=>{
@@ -128,32 +144,32 @@ constructor(store){
                 return v.toString(16);
                })
          })();
-        
          this.revision =(()=>{
              return this.actorEmail.split('@')[0]+this.projectEnterTime
          })();
         this.lmsUser=user.learner.name;
-        this.lmsId =user.learner.id;
-        if (params.reportingToLrs){
+        this.lmsId =user.learner.id;    
+        if (params.lrsSettings.reportingToLrs){
         this.lrs=(()=>{ 
-            if (params.environment ==='sandbox'){
-            var username = sw.var('v_key');
-            var password = sw.var('v_secret');
-            var endpoint = sw.var('v_endpoint');
+            if (!params.lrsSettings.production){
+            var username = params.lrsSettings.sandbox_key||sw.var('v_key');
+            var password = params.lrsSettings.sandbox_secret || sw.var('v_secret');
+            var endpoint = params.lrsSettings.sandbox_endpoint || sw.var('v_endpoint');
             }
-            else if(params.environment === 'production'){
-                var username = sw.var('v_prodKey');
-                var password = sw.var('v_prodSecret');
-                var endpoint = sw.var('v_prodEndpoint');
+            else {
+                var username = params.lrsSettings.production_key ||sw.var('v_prodKey');
+                var password = params.lrsSettings.production_secret ||sw.var('v_prodSecret');
+                var endpoint = params.lrsSettings.proudction_endpoint || sw.var('v_prodEndpoint');
             }
             try {
+                
                 let lrs = new TinCan.LRS({
                     endpoint: endpoint,
                     username: username,
                     password: password,
                     allowFail: false 
                 });
-                console.log('%c LRS endpoint:','color:#90ee90',lrs.endpoint,)
+                if(params.consoleLog.lrs)console.log('%c LRS endpoint:','color:#90ee90',lrs.endpoint)
                 return lrs;
             } catch (ex) {console.log("Failed to setup LRS object: " + ex); }
         })();
@@ -168,7 +184,7 @@ constructor(store){
         })();
     };
     defineStmt(passedActivity,verb){
-        //console.log(passedActivity)
+      
         let prevSlideIndex =(sw.var('cpInfoPrevSlide'));
         if(prevSlideIndex ===0  || passedActivity===null){
             //if there is no previous slide index the project was launched and captures
@@ -198,14 +214,21 @@ constructor(store){
         switch (verb){
         case'enter':
             this.type = this.activityType.slide;
-            this.activityDescription = `Slide ${this.activity} was entered`;  
+            this.activityDescription = `Slide ${this.activity} was entered`; 
+            if (this.activity.substr(0,10)==='xapi_menu_')this.activity.slice(10,this.activity.length)
         break;
         case 'answer':
             this.type =this.activityType.question;
             this.activityDescription =`Question:${quiz.question}`;
             this.activity=`${quiz.question}`;
-            this.activityId=this.idPrefix +"quiz/"+quiz.questionId;
+            this.activityId=`${this.idPrefix}quiz/${quiz.questionId}`;
         break;
+        case  'review':
+            this.type=this.activityType.question;
+            this.activityDescription =`Review of quiz slide ${xApiController.currentSlideIndex}`;
+            this.activity = `Review of slide named ${xApiController.currentSlideName}`;
+            this.activivityId = `${this.idPrefix}reveiwedquiz/${sw.insert_(xApiController.currentSlideName)}`;
+            break;
         case'pressed the button': 
         case'pressed the click box':
                 this.verbName = this.verb.press;
@@ -226,18 +249,18 @@ constructor(store){
             this.activityId=this.parentId;
         break;
         case 'start':
-            this.activityDescription=`Started Assessment ${quiz.quizName}`;
-            this.activity = quiz.quizName;
-            this.activityId = quiz.quizId;
+        case 'finish':
+           
+            this.activityDescription=`${verb}ed Assessment ${quiz.quizName}`;
+            this.activity = params.quizName || quiz.quizName;
+            this.activityId = params.quizId ||`${this.idPrefix}quiz/${sw.insert_(quiz.quizName)}`;
             this.type = this.activityType.assessment;
         break;
-        case 'finish':
-        
-                this.activityDescription=`Finished Assessment ${quiz.quizName}`;
-                this.activity = quiz.quizName;
-                this.activityId = quiz.quizId;
-                this.type = this.activityType.assessment;
-        break;
+        case 'return':
+                this.type = this.activityType.slide;
+                this.activity =this.activity.slice(10,this.activity.length)
+                this.activityDescription = `Returned to ${this.activity} Menu slide `;  
+            break;
         case'view':
             this.activityDescription =`Slide ${this.activity} was viewed`;
         break;
@@ -282,8 +305,8 @@ constructor(store){
         } else{
         return new TinCan.Activity({
             definition : {
-                "name":{[params.display_en_lang[0]]:sw.remove_(this.activity)},
-                "description":{[params.display_en_lang[0]]:`${sw.remove_(this.activityDescription)}`},
+                "name":{[params.display_language[0]]:sw.remove_(this.activity)},
+                "description":{[params.display_language[0]]:`${sw.remove_(this.activityDescription)}`},
                 "type":this.type
             },
             id : this.activityId
@@ -294,7 +317,7 @@ constructor(store){
         return new TinCan.Verb({
             "id":this.verbId,
             "display":{
-                [params.display_en_lang[0]]:this.verbName
+                [params.display_language[0]]:this.verbName
             } 
         });
     };
@@ -311,7 +334,7 @@ constructor(store){
             {
                 "registration":this.registrationId,
                 "revision":this.revision,
-                "language":params.display_en_lang[0],
+                "language":params.display_language[0],
                 "extensions": {
                     "http://id.tincanapi.com/extension/invitee": {
                         "studentId": this.lmsId,
@@ -319,18 +342,19 @@ constructor(store){
                       },
                 "http://superwrapper/extension/slide-info":{
                     "slideIndex":this.currentSlideIndex,
-                    "slideName":this.currentSlideName
+                    "slideName":this.currentSlideName,
+                    "slidesSequenceToThisPoint":this.slides
                 },
                 "http://id.tincanapi.com/extension/ending-point": endingPoint,
                 "http://id.tincanapi.com/extension/starting-point":startingPoint,
                 "http://id.tincanapi.com/extension/scrubDuration":{
-                    "name":{[params.display_en_lang[0]]:this.scrubTime,
-                    "description":{[params.display_en_lang[0]]:`PT${Math.round(this.rawScrubTime)}S`}
+                    "name":{[params.display_language[0]]:this.scrubTime,
+                    "description":{[params.display_language[0]]:`PT${Math.round(this.rawScrubTime)}S`}
                     }
                 },
                 "http://id.tincanapi.com/extension/duration":{
-                    "name":{[params.display_en_lang[0]]:'Video length duration'},
-                    "description":{[params.display_en_lang[0]]:`PT${Math.round(this.videoDuration)}S`}
+                    "name":{[params.display_language[0]]:'Video length duration'},
+                    "description":{[params.display_language[0]]:`PT${Math.round(this.videoDuration)}S`}
                 }
             
         }
@@ -344,10 +368,10 @@ constructor(store){
                   "id":this.parentId,
                   "definition": {
                     "name": {
-                      [params.display_en_lang[0]]:this.parentName
+                      [params.display_language[0]]:this.parentName
                     },
                     "description": {
-                      [params.display_en_lang[0]]: this.parentDescription
+                      [params.display_language[0]]: this.parentDescription
                     },
                     "type": this.parentType
                   }
@@ -359,7 +383,7 @@ constructor(store){
                     "id": this.categoryId,
                     "definition": {
                       "name": {
-                        [params.display_en_lang[0]]: this.categoryName
+                        [params.display_language[0]]: this.categoryName
                       },
                 
                       "type": this.categoryType
@@ -372,7 +396,7 @@ constructor(store){
                     "id": this.groupId,
                     "definition": {
                       "name": {
-                        [params.display_en_lang[0]]: this.groupName
+                        [params.display_language[0]]: this.groupName
                       },
                       "type": this.groupType
                     }
@@ -381,14 +405,38 @@ constructor(store){
         });
         if (this.groupName===null) context.grouping= null;
         if (this.categoryName===null) context.category= null;
-        // console.log(context)
         return  context;
     };
         createResult(quizType){
-        if (!quizType)return new TinCan.Result({
-            duration:this.totalDurationTime
-        })
-        else 
+    
+         if(this.quizFinalScore!==null){
+            this.quizFinalScore = null;
+            return new TinCan.Result({
+                "score": {
+                    "scaled": sw.var('cpInfoPercentage')/100,
+                    "raw": sw.var('cpInfoPercentage'),
+                    "min":0,
+                    "max":sw.var('cpQuizInfoTotalProjectPoints')
+                  },
+                  "success": sw.var('cpQuizInfoPassFail'),      
+                  "completion": true,
+                  "duration": (()=>{return sw.convertMilliSecondsToISO(Math.abs(this.quizFinishTime-this.quizStartTime))})(),
+                  "response": null
+            })
+           
+        }
+            else if (!quizType  && this.verbName !==this.verb.complete)return new TinCan.Result({
+                duration:this.totalDurationTime
+            })
+
+            else if (this.verbName ===this.verb.complete){
+                this.lastSlideTime = new Date().getTime();
+                this.totalProjectTime = (sw.convertMilliSecondsToISO(this.lastSlideTime - this.projectEnterTime ));
+                return new TinCan.Result({
+                    duration:this.totalProjectTime
+            })
+        }
+        else
         return new TinCan.Result({
             "score": {
                 "scaled": (()=>{
@@ -417,26 +465,25 @@ constructor(store){
         this.stmt.context.platform =navigator.platform;
         const clearCtx =['groupId','groupName','groupName','categoryId','categoryName'];//reset context for next activity
         clearCtx.map(ctxt=>this[ctxt]=null);
+   
     };
     prepareStmtToSend(){
-        //console.log(this.verbName)
         switch (this.verbName){
-                case 'started':
+                case this.verb.start:
+                case this.verb.finish:
                     //creates quiz parent id
                     this.stmt.target.id = this.stmt.target.id+'/quiz';
                       //creates quiz parent info for question parent used in 'answered'
                     this.quizParent = this.stmt.target;
                 break;
-                case 'answered':
+                case this.verb.answer:
                     //set activityType for answered to Types(aseessment)
-                   // console.log(this.quizParent)
                     this.quizParent.definition.type=this.activityType.assessment;
                     //cretate 2nd parent for slide
                     add2ndParent(this.quizParent);
                 break;
-                case 'entered slide':
-                case 'accessed course':
-                 
+                case this.verb.enter:
+                case this.verb.access:
                     //the currentslide becomes the videos 2nd parent
                     this.vidParent = this.stmt.target;
                     //has no result so it is removed
@@ -444,26 +491,25 @@ constructor(store){
                     //the current slide being entered is a 2nd parent to buttons on that slide
                     this.buttonParent = this.stmt.target;
                 break;
-                case 'completed course':
+                case this.verb.complete:
                     //sets property of complete to true
-                    
                     this.stmt.result.complete=true
                 break;
-                case 'completed':
+                case this.verb.finish:
                         this.stmt.result.complete=true
                         this.quizParent = this.stmt.target;
                         this.stmt.target.id = this.stmt.target.id+'/quiz';
                         add2ndParent(this.quizParent);
                 break;
 
-                case 'pressed the button':
-                case 'pressed the click box':
+                case this.verb.pressButton:
+                case this.verb.pressClickBox:
                     //when a button or click box is pressed set a the slide is the buttons 2nd parent.
                    add2ndParent(this.buttonParent);
                     //change id to show /button/button name from captivate
                     this.stmt.target.id=`${this.idPrefix}button/${sw.insert_(this.activity)}`;
                 break; 
-                case 'played':
+                case this.verb.play:
                     //add 2nd parent to reflect slide
                    add2ndParent(this.vidParent);
                    //delete unneeded vid extensions
@@ -471,31 +517,28 @@ constructor(store){
                     delete this.stmt.context.extensions["http://id.tincanapi.com/extension/starting-point"];
                     
                 break;
-                case 'paused':
+                case this.verb.pause:
                         //add 2nd parent to reflect slide
                        add2ndParent(this.vidParent);
                         //delete unneeded vid extensions
                         delete this.stmt.context.extensions["http://id.tincanapi.com/extension/starting-point"];
                 break;
-                case 'scrubbed':
-                case  'adjusted volume':
+                case  this.verb.scrub:
+                case  this.verb.adjustVolume:
                         //add 2nd parent to reflect slide
                         add2ndParent(this.vidParent);
                     break;
-                case 'muted':
-                case 'unmuted':
+                case this.verb.mute:
+                case this.verb.unmute:
                         //add 2nd parent to reflect slide
                         add2ndParent(this.vidParent)
                         //delete unneeded vid extensions
                         delete this.stmt.context.extensions["http://id.tincanapi.com/extension/starting-point"];
                 break;
         }
-            //remove scrub duration if not a scrubbed statement
-            //console.log(this.verbName);
-            
-            if(this.verbName !='scrubbed'){delete this.stmt.context.extensions["http://id.tincanapi.com/extension/scrubDuration"]}
+            //remove scrub duration if not a scrubbed statement;
+            if(this.verbName != this.verb.scrub){delete this.stmt.context.extensions["http://id.tincanapi.com/extension/scrubDuration"]}
             //remove all video extensions from statmen if not a video object
-
             if (this.video ===null) {
                 delete this.stmt.context.extensions["http://id.tincanapi.com/extension/ending-point"];
                 delete this.stmt.context.extensions["http://id.tincanapi.com/extension/starting-point"];
@@ -516,8 +559,7 @@ constructor(store){
     };
     sendStmt(){
        let stmt =this.stmt;
-       //console.log(stmt);
-        if (this.ie===true  || params.reportingToLrs ===false){
+        if (this.ie===true  || params.lrsSettings.reportingToLrs ===false){
             if(params.consoleLog.statements) console.log("%c🖨 Reporting off console only","color:red",{stmt});
             if(params.consoleLog.quickLogVerbActivity)console.log(stmt.verb.display['en-US'],stmt.target.definition.name['en-US']);
             return
@@ -547,33 +589,35 @@ constructor(store){
             window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER',e=>{
             this.slideVids=[];
             this.video=null;
+            if (sw.var('cpInReviewMode')){
+                this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'review')
+                }
             //sw.typeText();
             this.quizhandler(e);
-            
-            if(sw.var('cpInQuizScope')==0){this.quizStarted = false}
+            if(sw.var('cpInQuizScope')==0){this.quizStarted = false};
             if(sw.var('cpInQuizScope')==true  && !this.quizStarted){
                 if(quiz.question ===null){
                     if(params.verbs.quiz.start[0])this.defineStmt(quiz.quizName,'start');
+                    this.quizStartTime = new Date().getTime();
                     this.quizStarted = true;
                 }
             }
-            console.log(this.quizStarted);
-            
             if(sw.var('cpInQuizScope')===false && !this.quizStarted ){
                     this.quizStarted===false;
-
-                    console.log('end quiz')
-
-
             }
-
+            if(!this.quizStarted && sw.var('cpInQuizScope')===false && this.quizReported!==true){
+                this.quizReported  = true;
+                this.quizFinalScore = sw.var('cpQuizInfoPointsscored');
+                this.quizPossibleScore = sw.var('cpQuizInfoTotalQuizPoints');
+                this.quizFinishTime = new Date().getTime();
+                this.defineStmt(quiz.quizName,'finish');
+            }
             this.currentSlideName = sw.var('cpInfoCurrentSlideLabel');
             //update index - cp Index starts as 0, slides start at 1
             this.currentSlideIndex=sw.var('cpInfoCurrentSlideIndex')+1;
             this.totalSlides=sw.var('cpInfoSlideCount');
            if(this.currentSlideIndex === this.totalSlides && params.verbs.complete){
                 if(params.verbs.complete[0])this.defineStmt(null,'complete');
-                //console.log(this.slides)
                 this.defineStmt(this.slides[this.slides.length-2],'view')
                 this.launchFlag=true;
            };
@@ -585,17 +629,23 @@ constructor(store){
             this.slideExitTime = new Date().getTime();
             let milliSeconds = Math.floor((this.slideExitTime-this.slideEnterTime));
             this.totalDurationTime = sw.convertMilliSecondsToISO(milliSeconds);
-            //console.log(this.slides)
             if(!this.launchFlag){
-                 //console.log(this.slides)
-                // console.log(this.slides[this.slides.length-1]);
                  if(params.verbs.view[0]){this.defineStmt(this.slides[this.slides.length-1],'view');
                  }
                  //this listener is for slide change, so the end of the last slide now becomes
                  //beginning time for this slide
                  this.slideEnterTime = this.slideExitTime
               }else this.launchFlag=false;
-              if(params.verbs.enter[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'enter');
+                if(this.currentSlideName.substr(0,10)==='xapi_menu_' && !this.menuFlag){
+                    if(params.verbs.enter[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'enter')
+                    this.menuFlag=true;
+                }
+                else if (this.currentSlideName.substr(0,10)==='xapi_menu_' && this.menuFlag){
+                    if(params.verbs.return[0])this.defineStmt (this.currentSlideName,'return');
+                } else{
+                    if(params.verbs.enter[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'enter')
+                }
+              
                if(typeof e.Data.videos !=="undefined"){
                    xApiController.appendVideoListener(e.Data.videos.length);
                 }
@@ -645,12 +695,7 @@ constructor(store){
                  });
             window.cpAPIEventEmitter.addEventListener('CPAPI_QUESTIONSUBMIT',e=>{
                 this.quizhandler(e) 
-                //console.log(quiz)
-                // if(quiz.correct===true){
-                //     this.defineStmt(quiz.Name,'finish')
-                // }//TODO:legacy commented out - broken?? check finish verb
                 if(params.verbs.quiz.answer){
-                    //console.log(quiz.question)
                     this.defineStmt(quiz.question,'answer');
                 }
             })
@@ -667,14 +712,14 @@ constructor(store){
                     this.refocusStartTime=new Date().getTime();
                     milliSeconds = Math.floor((this.refocusStartTime-this.unfocusStartTime));
                     this.focusEventTime = sw.convertMilliSecondsToISO(milliSeconds);
-                    this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'focus')}
+                    if(params.verbs.focus[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'focus')}
                 else {
                     this.unfocusStartTime = new Date().getTime();
                     if(!this.refocusStartTime) {milliSeconds = Math.abs((this.slideEnterTime - this.unfocusStartTime))}
                     else  { milliSeconds = Math.floor((this.unfocusStartTime- this.refocusStartTime))
                     }
                     this.focusEventTime = sw.convertMilliSecondsToISO(milliSeconds);
-                    this.defineStmt(sw.var('cpInfoCurrentSlideLabel'), 'unfocus')}
+                    if(params.verbs.unfocus[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'), 'unfocus')}
             })
     };
     DOMListener(callback){
@@ -737,13 +782,6 @@ constructor(store){
     };
     quizhandler(data){ 
      quiz = new Quiz(data);  
-    //console.log(data) 
- 
-
-    //trecs.map((trec)=>{if(trec.link===data.Data.id)console.log(trec.text)})
-
-    
-    // if(params.consoleLog.quizLog  && quiz.questionType==='likert')console.log(quiz)
     }
 };
 class SuperWrapper{
@@ -761,7 +799,6 @@ class SuperWrapper{
     };
     jump(slide){
         this.capSetVarValue('cpCmndGotoSlide',slide);
-        //console.log(slide)
     };
     next(){
         window.cpAPIInterface.next();
@@ -812,12 +849,14 @@ class SuperWrapper{
         return (input.indexOf('_') > 0) ? input.split('_').join(' '):input;
     };
     uriCheck(uri){
-        //console.log(uri)
+    
         let validUri = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
-        let valid = validUri.test(uri);   
-        //console.log(valid)
+        let regexUri = /^([a-z][a-z0-9+.-]*):(?:\/\/((?:(?=((?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*))(\3)@)?(?=(\[[0-9A-F:.]{2,}\]|(?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\10)?)(?:\?(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\11)?(?:#(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\12)?$/i;
+
+        let valid = regexUri.test(uri);   
+   
         if(valid)return uri
-        else return null;
+        else {console.log(`%c Passed URI ${uri} does not match requirmennts.`,'color:orange');return null;}
     };
     checkLoad(element,callback){//helper fucntion to wait for element to load before taking action
         const elementInterval = setInterval(checkElement, 500, callback)
@@ -866,6 +905,9 @@ class SuperWrapper{
         if(typeof bool ==='boolean')cp.m_gestureHandler.enabled = bool;
         else return;
     };
+    onLine(){
+        return navigator.onLine;
+    }
 };
 class Learner{
     constructor(){
@@ -960,11 +1002,11 @@ class Learner{
             //TODO:Create xAPI WRapper logo/background
             }); 
             sw.login = $('.login-screen');
-            sw.placeholder = params.login.placeholderText || "Please enter your email and press enter or submit";
+            sw.placeholder = (params.login.Use_custom_login_messages  && params.login.placeholder_text !==null)?params.login.placeholder_text :"Please enter your email and press enter or submit";
             sw.footer ="Powered by SuperWrapper";
-            sw.message= params.login.loginMessage ||`Entering an email address will be the user that is reported to the demo LRS, for this
+            sw.message= (params.login.Use_custom_login_messages &&params.login.login_message!==null)?params.login.login_message :`Entering an email address will be the user that is reported to the demo LRS, for this
                         demonstration if you would prefer please press the skip button and a demo email
-                        will be assinged to you`
+                        will be assinged to you`;
     //create input box
             $(`<input class ="email-input" type="email" placeholder ="${sw.placeholder}">"`)
             .appendTo(sw.login)
@@ -1008,7 +1050,7 @@ class Learner{
                 "box-shadow": "2px 2px #888888",
             }).on ('click',()=>{passEmail($('.email-input').val())
         });
-            if(!params.login.skipEmail){
+            if(params.login.Allow_user_to_skip_email){
                 $('<button id="skip">Skip Email</button>')
                 .insertAfter('#submit')
                 .css({
@@ -1023,8 +1065,8 @@ class Learner{
                     "background-color":"#EE7600",
                     "background-color":"orange"
                 }))  .on('click',()=>{
-                    console.log('click')
-                    window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skipEmailValue))?params.login.skipEmailValue:'user@SuperWrapper.com')})()}`,"_parent");
+                 
+                    window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skip_email_default_value))?params.login.skip_email_default_value:'user@SuperWrapper.com')})()}`,"_parent");
                 });
             }
             $(`<footer class ="footer">${sw.footer}</footer>`)
@@ -1055,7 +1097,7 @@ class Learner{
             }
         function passEmail(email){
             let valid = user.testEmail(email);
-            if(!valid)$('.email-input').val('').focus('').attr("placeholder",params.login.invalidMsg || "Invalid email please try again and press enter");
+            if(!valid)$('.email-input').val('').focus('').attr("placeholder",params.login.invalid_email_placholder_Message || "Invalid email please try again and press enter");
             else {
                 window.open(`${user.url.href}?mbox=${email}`,"_parent");
             }
@@ -1065,7 +1107,6 @@ class Learner{
 class VideoObject{
     constructor(vidObj){
         this.video =vidObj;
-        console.log(this.video)
         this.duration = vidObj.duration;
         this.name = vidObj.cpVideo.id;
         this.pauseTime = [];
@@ -1161,8 +1202,8 @@ class Verbs{
         this.openId=sw.uriCheck(params.verbs.open[2])  ||'http://activitystrea.ms/schema/1.0/open';
         this.complete =params.verbs.complete[1] ||'completed course';
         this.completeId=sw.uriCheck(params.verbs.complete[2])  || 'http://activitystrea.ms/schema/1.0/complete';
-        this.finish = params.verbs.quiz.finish[1] ||'completed';
-        this.finishId =sw.uriCheck(params.verbs.quiz.finish[2])  || 'http://activitystrea.ms/schema/1.0/complete';
+        this.finish = params.verbs.quiz.finish[1] ||'finished';
+        this.finishId =sw.uriCheck(params.verbs.quiz.finish[2])  || `${sw.verbId}finished`;
         this.start=params.verbs.quiz.start[1] ||'started';
         this.startId = sw.uriCheck(params.verbs.quiz.start[2]) || 'http://activitystrea.ms/schema/1.0/start';
         this.answer=params.verbs.quiz.answer[1] ||"answered";
@@ -1218,13 +1259,15 @@ class Quiz{
     constructor(data){
         this.possibleAnswers = [];
         this.quizName=params.quizName || xApiController.parentName + " Quiz";
-        this.quizId=params.quizId || xApiController.parentId;
+        this.quizId=sw.uriCheck(params.quizId) || xApiController.parentId;
         this.questionType = sw.var('cpQuizInfoQuestionSlideType');
         this.totalquestions =sw.var('cpQuizInfoTotalQuestionsPerProject');
         this.totalPoints = sw.var('cpQuizInfoPointsPerQuestionSlide');
         this.quizPossiblePoints =sw.var('cpQuizInfoTotalQuizPoints');
         this.possiblePoints =sw.var('cpQuizInfoPointsPerQuestionSlide');
         this.questionId=data.cpData.interactionID;
+        this.quizPassingGrade = sw.var('cpQuizInfoQuizPassPoints');
+        this.quizTotalPoints = sw.var('cpQuizInfoTotalProjectPoints');
         this.question=null;
         this.questionTitle=null;
         //this.questionNumber =data.cpdata.questionNumber+1||null;
@@ -1240,9 +1283,9 @@ class Quiz{
              textArray.push($(labels[label]).text());
     }
    });
-   //console.log(data)
+
     if(typeof data.cpData.correctAnswer !='undefined'){
-        //console.log(data.cpData);
+       
        if(params.consoleLog.quizArray) console.log(textArray)
         this.correctAnswer = (()=>{
             let answers = data.cpData.correctAnswer;
@@ -1330,9 +1373,9 @@ class Quiz{
 class Definitions{
 constructor(){
     this.choice =  new TinCan.Activity({definition: {
-        "name":{[params.display_en_lang[0]]:xApiController.activity},
+        "name":{[params.display_language[0]]:xApiController.activity},
             "description": {
-                [params.display_en_lang[0]]: quiz.question
+                [params.display_language[0]]: quiz.question
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "choice",
@@ -1352,7 +1395,7 @@ constructor(){
                     quiz.possibleAnswers.map((answer,index)=>{
                        let tempAnswer={"id":`${quiz.questionType}-${index+1}`,
                         "description":{
-                            [params.display_en_lang[0]]:answer
+                            [params.display_language[0]]:answer
                         }
                     }
                         answers.push(tempAnswer)})
@@ -1363,8 +1406,9 @@ constructor(){
     });
     this.true_false= new TinCan.Activity({"definition": 
         {
+            "name":{[params.display_language[0]]:xApiController.activity},
             "description": {
-                [params.display_en_lang[0]]: quiz.question
+                [params.display_language[0]]: quiz.question
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "true-false",
@@ -1374,8 +1418,9 @@ constructor(){
         id:xApiController.activityId
     });
     this.long_fill_in= new TinCan.Activity({"definition": {
+             "name":{[params.display_language[0]]:xApiController.activity},
             "description": {
-                [params.display_en_lang[0]]: quiz.question
+                [params.display_language[0]]: quiz.question
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "long-fill-in",
@@ -1393,8 +1438,9 @@ constructor(){
     id:xApiController.activityId
     });
     this.fill_in = new TinCan.Activity( {"definition": {
+     "name":{[params.display_language[0]]:xApiController.activity},
     "description": {
-        [params.display_en_lang[0]]: quiz.question
+        [params.display_language[0]]: quiz.question
     },
     "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
     "interactionType": "fill-in",
@@ -1413,9 +1459,9 @@ constructor(){
 id:xApiController.activityId
     });
     this.matching = new TinCan.Activity({"definition": {
-    "name":{[params.display_en_lang[0]]:quiz.question},
+    "name":{[params.display_language[0]]:quiz.question},
         "description": {
-            [params.display_en_lang[0]]: quiz.question
+            [params.display_language[0]]: quiz.question
         }, 
         "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
         "interactionType": "matching",
@@ -1437,7 +1483,7 @@ id:xApiController.activityId
                 if (quiz.source)quiz.source.map((answer,index)=>{
                    let tempAnswer={"id":`${answer.trim()}`,
                     "description":{
-                        [params.display_en_lang[0]]:answer.trim()
+                        [params.display_language[0]]:answer.trim()
                     }
                 }
                     answers.push(tempAnswer)})
@@ -1450,7 +1496,7 @@ id:xApiController.activityId
             if(quiz.target)quiz.target.map((answer,index)=>{
                let tempAnswer={"id":`${answer.trim()}`,
                 "description":{
-                    [params.display_en_lang[0]]:answer.trim()
+                    [params.display_language[0]]:answer.trim()
                 }
             }
                 answers.push(tempAnswer)})
@@ -1460,8 +1506,9 @@ id:xApiController.activityId
     id:xApiController.activityId
     })
     this.sequencing = new TinCan.Activity({"definition": {
+            "name":{[params.display_language[0]]:xApiController.activity},
             "description": {
-                [params.display_en_lang[0]]: quiz.question
+                [params.display_language[0]]: quiz.question
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "sequencing",
@@ -1480,7 +1527,7 @@ id:xApiController.activityId
                 quiz.possibleAnswers.map((answer,index)=>{
                    let tempAnswer={"id":`${quiz.questionType}-${index+1}`,
                     "description":{
-                        [params.display_en_lang[0]]:answer
+                        [params.display_language[0]]:answer
                     }
                 }
                     answers.push(tempAnswer)})
@@ -1490,8 +1537,9 @@ id:xApiController.activityId
     id:xApiController.activityId
     });
     this.likert= new TinCan.Activity({"definition": {
+             "name":{[params.display_language[0]]:xApiController.activity},
             "description": {
-                [params.display_en_lang[0]]: quiz.question
+                [params.display_language[0]]: quiz.question
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "likert",
@@ -1500,7 +1548,7 @@ id:xApiController.activityId
                 let answers =[];quiz.possibleAnswers.map((answer,index)=>{
                 let tempAnswer={"id":`${quiz.questionType}-${index+1}`,
                  "description":{
-                     [params.display_en_lang[0]]:answer
+                     [params.display_language[0]]:answer
                  }
              }
                  answers.push(tempAnswer)})
@@ -1511,7 +1559,7 @@ id:xApiController.activityId
     });
     this.hotspot= new TinCan.Activity({"definition": {
             "description": {
-                [params.display_en_lang[0]]: quiz.question
+                [params.display_language[0]]: quiz.question
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "choice",
@@ -1531,7 +1579,7 @@ id:xApiController.activityId
                     quiz.possibleAnswers.map((answer,index)=>{
                        let tempAnswer={"id":`${quiz.questionType}-${index+1}`,
                         "description":{
-                            [params.display_en_lang[0]]:answer
+                            [params.display_language[0]]:answer
                         }
                     }
                         answers.push(tempAnswer)})
