@@ -90,7 +90,7 @@ if(navigator.appName  !== "Microsoft Internet Explorer"){
 	tincan = "assets/js/tincan.js"
 }else{
 	controllerVersion ="assets/js/controllerNoIE.js";
-	cpm = null; 
+	
 }
 //end of inserted code
 /********************
