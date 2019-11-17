@@ -6,9 +6,6 @@
 console.log('SuperWrapper v1.0.8');
 
 const customVerbPrefix="http://id.superwrapper.com/verb/";
-
-
-
 const params = {
     "environment":"production",
     "reportingToLrs":true,
@@ -93,10 +90,7 @@ function init(){
         xApiController.cpListeners(); 
      });
 };
-
 };
-
-
 class XAPIController{
 constructor(store){
         this.totalSlides = sw.var('cpInfoSlideCount');
@@ -174,7 +168,6 @@ constructor(store){
         })();
     };
     defineStmt(passedActivity,verb){
-    
         //console.log(passedActivity)
         let prevSlideIndex =(sw.var('cpInfoPrevSlide'));
         if(prevSlideIndex ===0  || passedActivity===null){
@@ -183,8 +176,7 @@ constructor(store){
             passedActivity = passedActivity || (()=>{
              this.launch = true;
              return this.parentName})();
-            };
-            
+            };  
         this.parentType= this.activityType.course;
         this.activity = passedActivity;
         this.activityId = `${this.idPrefix}slide/${sw.insert_(this.activity)}`;
@@ -267,7 +259,6 @@ constructor(store){
             this.type = this.activityType.slide
             this.activityDescription = `Slide ${this.activity} had a focus change`; 
             this.totalDurationTime = (this.focusEventTime);
-
        break;
        default:
            break;
@@ -287,9 +278,6 @@ constructor(store){
         if(arguments[0] != null  && this.verbName !=='completed' ){
          
             let definitions = new Definitions();
-
-            //console.log(definitions.returnDefinition(type))
-            
             return definitions.returnDefinition(type);
         } else{
         return new TinCan.Activity({
@@ -396,7 +384,6 @@ constructor(store){
         // console.log(context)
         return  context;
     };
-   
         createResult(quizType){
         if (!quizType)return new TinCan.Result({
             duration:this.totalDurationTime
@@ -558,13 +545,11 @@ constructor(store){
     };
     cpListeners(){
             window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER',e=>{
-console.log('entered slide')
             this.slideVids=[];
             this.video=null;
             //sw.typeText();
-    
-            this.quizIdentifier = e.Data.qs
             this.quizhandler(e);
+            
             if(sw.var('cpInQuizScope')==0){this.quizStarted = false}
             if(sw.var('cpInQuizScope')==true  && !this.quizStarted){
                 if(quiz.question ===null){
@@ -572,6 +557,16 @@ console.log('entered slide')
                     this.quizStarted = true;
                 }
             }
+            console.log(this.quizStarted);
+            
+            if(sw.var('cpInQuizScope')===false && !this.quizStarted ){
+                    this.quizStarted===false;
+
+                    console.log('end quiz')
+
+
+            }
+
             this.currentSlideName = sw.var('cpInfoCurrentSlideLabel');
             //update index - cp Index starts as 0, slides start at 1
             this.currentSlideIndex=sw.var('cpInfoCurrentSlideIndex')+1;
@@ -666,7 +661,6 @@ console.log('entered slide')
             window.cpAPIEventEmitter.addEventListener('CPAPI_VARIABLEVALUECHANGED','v_increment',e=>{
             });
             this.DOMListener((focus)=>{
-             
                 let milliSeconds
                 if(focus){
                    
@@ -675,18 +669,13 @@ console.log('entered slide')
                     this.focusEventTime = sw.convertMilliSecondsToISO(milliSeconds);
                     this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'focus')}
                 else {
-                    
                     this.unfocusStartTime = new Date().getTime();
                     if(!this.refocusStartTime) {milliSeconds = Math.abs((this.slideEnterTime - this.unfocusStartTime))}
                     else  { milliSeconds = Math.floor((this.unfocusStartTime- this.refocusStartTime))
-                    
-                    
                     }
                     this.focusEventTime = sw.convertMilliSecondsToISO(milliSeconds);
                     this.defineStmt(sw.var('cpInfoCurrentSlideLabel'), 'unfocus')}
-                
             })
-      
     };
     DOMListener(callback){
             let visible = true;
@@ -703,7 +692,6 @@ console.log('entered slide')
                     callback(visible = false);
                 }
             }
-        
             // Standards:
             if ('hidden' in document) {
                 document.addEventListener('visibilitychange',
@@ -788,7 +776,6 @@ class SuperWrapper{
         $('iframe').attr('src', $('iframe').attr('src'));
     };
     convertMilliSecondsToISO(millis){
-        
         let minutes = Math.floor(millis / 60000);
         let seconds = ((millis % 60000) / 1000).toFixed(0);
         return `PT0H${minutes}M${Number(seconds) < 10 ? '0' : ''}${seconds}S`;
@@ -896,13 +883,11 @@ class Learner{
     init(callback){
 
     if (typeof this.scorm ==="object"){
-
            //if there is a scorm user avaiable this will grab data from scorm if available
         this.learner = {
         "id":(this.testEmail(this.scorm.LearnerId))?this.scorm.LearnerId:`${insert_(this.scorm.LearnerId)}@superwrapper.com`,
         "name":this.scorm.LearnerName
          };
-    
          callback();    
     }
     else if(this.url_emailParam !==null  && this.testEmail(this.url_emailParam)){
@@ -1011,10 +996,6 @@ class Learner{
                 "transform":"translate(-50%,-10%)",
                 "color":"#FFFAFA"
             })
-
-        
-          
-
             $('<button id="submit">Submit Email</button>')
             .insertBefore('.message')
             .css({
@@ -1025,12 +1006,8 @@ class Learner{
                 "min-height":"5vh",
                 "border-radius":"5px",
                 "box-shadow": "2px 2px #888888",
-             
             }).on ('click',()=>{passEmail($('.email-input').val())
-          
-        
         });
-
             if(!params.login.skipEmail){
                 $('<button id="skip">Skip Email</button>')
                 .insertAfter('#submit')
@@ -1042,7 +1019,6 @@ class Learner{
                     "min-height":"5vh",
                     "border-radius":"5px",
                     "box-shadow": "2px 2px #888888"
-            
                 }).hover($(this).css({
                     "background-color":"#EE7600",
                     "background-color":"orange"
@@ -1051,7 +1027,6 @@ class Learner{
                     window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skipEmailValue))?params.login.skipEmailValue:'user@SuperWrapper.com')})()}`,"_parent");
                 });
             }
-        
             $(`<footer class ="footer">${sw.footer}</footer>`)
             .insertAfter('.message')
             .css({
@@ -1063,9 +1038,7 @@ class Learner{
                 "font-family":"arial",
                 "font-size":"80%"
             });
-
             if(screen.width <415){
-
                 $('.message')
                 .css({
                     "width":"85%"
@@ -1079,18 +1052,13 @@ class Learner{
                 css({
                     "margin-left":"28vw"
                 })
-
             }
-
-
         function passEmail(email){
             let valid = user.testEmail(email);
             if(!valid)$('.email-input').val('').focus('').attr("placeholder",params.login.invalidMsg || "Invalid email please try again and press enter");
             else {
                 window.open(`${user.url.href}?mbox=${email}`,"_parent");
             }
-
-
         }    
     });
 }};
@@ -1261,7 +1229,6 @@ class Quiz{
         this.questionTitle=null;
         //this.questionNumber =data.cpdata.questionNumber+1||null;
         let labels = $('[id^=si]');
-
         let textArray=[];
         labels.filter(label=>{
          if($(labels[label]).text()!='') {
@@ -1274,7 +1241,6 @@ class Quiz{
     }
    });
    //console.log(data)
-  
     if(typeof data.cpData.correctAnswer !='undefined'){
         //console.log(data.cpData);
        if(params.consoleLog.quizArray) console.log(textArray)
@@ -1289,7 +1255,6 @@ class Quiz{
             return answers;
              })();   
         this.correct = (()=>{return (JSON.stringify(this.correctAnswer)==JSON.stringify(this.selectedAnswer))?true:false})();
-             
         switch (this.questionType){
         case 'long-fill-in':
         case 'fill-in':
@@ -1333,7 +1298,6 @@ class Quiz{
                     }
                 } )
         break;
-
         case 'true-false':
                 this.question = textArray[2];
                 this.questionTitle = textArray[1];
@@ -1343,28 +1307,21 @@ class Quiz{
                 this.question=textArray[2];
                 this.questionTitle = textArray[1];
         break;
-        
         case 'hotspot':
                 this.questionTitle = textArray[1];
                 this.question =textArray[2];
         break;
-
         case 'likert':
                 this.questionTitle=textArray[1];
                 this.question = textArray[2];
+                if(typeof cp.model.data[`${xApiController.quizIdentifier}`] !=='undefined')
                 this.possibleAnswers=cp.model.data[`${xApiController.quizIdentifier}`].rsv
         break;
-        default:
-            
-               
+        default:    
         break;
         }
-        
         }
        else this.correctAnswer,this.selectedAnswer,this.correct = null;
-
- 
-
 //    if(this.questionType !='matching')this.possibleAnswers= (this.questionType==='sequencing')
 //    ?this.possibleAnswers = textArray.slice(3,textArray.indexOf('Submit '))||null
 //    :this.possibleAnswers = textArray.slice(4,textArray.indexOf('Submit '))||null;
@@ -1403,7 +1360,7 @@ constructor(){
             })()
     },
     id:xApiController.activityId
-});
+    });
     this.true_false= new TinCan.Activity({"definition": 
         {
             "description": {
@@ -1434,8 +1391,8 @@ constructor(){
             ]
     },
     id:xApiController.activityId
-});
-this.fill_in = new TinCan.Activity( {"definition": {
+    });
+    this.fill_in = new TinCan.Activity( {"definition": {
     "description": {
         [params.display_en_lang[0]]: quiz.question
     },
@@ -1454,9 +1411,8 @@ this.fill_in = new TinCan.Activity( {"definition": {
 
 },
 id:xApiController.activityId
-});
-
-this.matching = new TinCan.Activity({"definition": {
+    });
+    this.matching = new TinCan.Activity({"definition": {
     "name":{[params.display_en_lang[0]]:quiz.question},
         "description": {
             [params.display_en_lang[0]]: quiz.question
@@ -1473,7 +1429,6 @@ this.matching = new TinCan.Activity({"definition": {
                         correctAnswer=correctAnswer+`${answer.trim()}[.]${aAndb[index].substr(2,2)}[,]`});
                     correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
                     return correctAnswer.toString();
-             
             })()
         ,
         "source": 
@@ -1501,13 +1456,9 @@ this.matching = new TinCan.Activity({"definition": {
                 answers.push(tempAnswer)})
             return answers
     })(),
-},
-
-id:xApiController.activityId
-
-})
-
-    
+    },
+    id:xApiController.activityId
+    })
     this.sequencing = new TinCan.Activity({"definition": {
             "description": {
                 [params.display_en_lang[0]]: quiz.question
@@ -1533,12 +1484,11 @@ id:xApiController.activityId
                     }
                 }
                     answers.push(tempAnswer)})
-                  
                 return answers
         })() 
     },
     id:xApiController.activityId
-});
+    });
     this.likert= new TinCan.Activity({"definition": {
             "description": {
                 [params.display_en_lang[0]]: quiz.question
@@ -1554,16 +1504,11 @@ id:xApiController.activityId
                  }
              }
                  answers.push(tempAnswer)})
-               
              return answers
      })() 
-
         },
-       
         id:xApiController.activityId
     });
- 
-
     this.hotspot= new TinCan.Activity({"definition": {
             "description": {
                 [params.display_en_lang[0]]: quiz.question
@@ -1595,15 +1540,13 @@ id:xApiController.activityId
         },
         id:xApiController.activityId
     }) ;
-}
+    }
 returnDefinition(type){
     if(type ==='true-false')type = 'true_false';
     if(type ==='long-fill-in')type ='long_fill_in';
     if(type === 'fill-in')type ='fill_in';
     if(type=== 'likert')quiz.correct=null;
-    if(quiz.correctAnswers)console.log(this)
-
-
+    if(quiz.correctAnswers)console.log(this);
     return this[type];
 };
 };
