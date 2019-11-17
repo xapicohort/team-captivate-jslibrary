@@ -34,6 +34,7 @@ In captivate you have to set up these user variables for your LRS:
 ```v_prodEndpoint = [set to your LRS endpoint]```
                     
 Note:Included Captivate example file has these set up with our cohorts Watershed LRS. Note you can also use these variables and toggle between a sandbox and production environment.  The sandox equvalent are:
+
 ```v_key = [ set to your LRS Key]```
 
 ```v_secret = [ set to your LRS Secret ]```
@@ -115,7 +116,7 @@ if(navigator.appName  !== "Microsoft Internet Explorer"){
 	/*this is appending the variables (files to load) we set up top
 	*******************
 	**  SuperWrapper **
-    ********************/
+        ********************/
 ```           
              
 ### Step 7:  
