@@ -17,8 +17,8 @@ const params = {
                 open: [false,'opened','http://activitystrea.ms/schema/1.0/open'],
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
                 pressClickBox:[true, 'clicked box'],//same verb as above
-                focus:[true,'focused','http://id.tincanapi.com/verb/focused'],
-                unfocus:[true,'unfocused','http://id.tincanapi.com/verb/unfocused'],
+                focus:[false,'focused','http://id.tincanapi.com/verb/focused'],
+                unfocus:[false,'unfocused','http://id.tincanapi.com/verb/unfocused'],
                 experience:[false, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
             "quiz":
             {
@@ -36,7 +36,7 @@ const params = {
                 mute:[true,'muted', `${customVerbPrefix}muted`],
                 unmute:[true,'unmuted', `${customVerbPrefix}unmuted`],
                 adjustVolume:[true,'adjusted volume',`${customVerbPrefix}adjustVolume`],
-                watch: [false,'watched','http://activitystrea.ms/schema/1.0/watch']
+                watch: [true,'watched','http://activitystrea.ms/schema/1.0/watch']
             },
         },
     "consoleLog":{
@@ -77,7 +77,7 @@ const params = {
     "returnToLastSlideVisited":true,//TODO:write query to check last slide visited
 };
 
-if(params.consoleLog.version)console.log('SuperWrapper v1.1.0');
+if(params.consoleLog.version)console.log('SuperWrapper v1.1.1');
 //TODO:put it regex check for valid IRI for all passed paramter ID's, set to null if invlaid so it defaults
 let xApiController,user,sw,quiz;
 function init(){
@@ -414,7 +414,7 @@ constructor(store){
             return new TinCan.Result({
                 "score": {
                     "scaled": sw.var('cpInfoPercentage')/100,
-                    "raw": sw.var('cpInfoPercentage'),
+                    "raw": sw.var('cpQuizInfoPointsscored'),
                     "min":0,
                     "max":sw.var('cpQuizInfoTotalProjectPoints')
                   },
@@ -1120,11 +1120,16 @@ class VideoObject{
                 clearInterval(playFlag);
             }
             },1000)
-        $(`#btmControl${this.name}`).on('mousedown', ()=>{
+           
+     
+        $(`#btmControl${this.name}`).on('click', ()=>{
+        
              this.getStartTime= this.video.currentTime; 
         })
-        this.listener = $(`#btmControl${this.name}`).on(xApiController.eventBinder,e=>{
+        this.listener = $(`#btmControl${this.name}`).on('mousedown',e=>{
+
                 let playbarAction = ($(e.target)[0].innerText);
+                console.log(playbarAction)
                 let playbar;
                 (playbarAction.indexOf(',')> -1)? playbar = playbarAction.split(",")[0]:playbar = playbarAction;
                 (playbarAction.indexOf('set to')> -1)? playbar = playbarAction.split("set to")[0]:playbar = playbar;
