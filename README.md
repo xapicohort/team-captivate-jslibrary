@@ -54,7 +54,7 @@ Note:Included Captivate example file has these set up with our cohorts Watershed
 
 Copy this repo (use clone button and downloaad zip for easiest access)
 
-                -In the folder superWrapperSource copy the following the files
+                -In the folder superWrapperSource copy the following the files to your clipboard to paste 
                         controller.js
                         controlerNoIE.js
                         tincan.js
@@ -67,11 +67,11 @@ We have to make changes to either index.html or index_scorm.html from captivate 
 
             
                
-              -Open the index.html or index_scorm.html in the same code editor from Captivate
+              -Open the index.html or index_scorm.html from the Captivate publish file 
               
-              -Look for the <script> tag
+              -Look for the <script> tag around line 10
 
-              Insert the following lines after the script, ensuring not to overwrite anything
+              Insert the following lines after the script, ensuring not to overwrite anything from the /* to the */
 
 ```javascript
 /********************
