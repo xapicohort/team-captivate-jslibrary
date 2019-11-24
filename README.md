@@ -15,6 +15,8 @@ This repo lives on my personal server so any changes reflected here will be refl
 
 # Basic set-up and instructions:
 
+[YouTube - Step by Step Walkthrough}(https://www.youtube.com/watch?v=erEzaY9_LCE&feature=youtu.be)
+
 ### Step 1:  
 
 In your captivate project on the first slide in the on slide enter action add action 'execute javascript', in the 
