@@ -5,8 +5,8 @@ const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "display_language":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
-                access:[true,'accessed course','http://activitystrea.ms/schema/1.0/access'],
-                enter:[true,'wumbo',`${customVerbPrefix}enteredSlide`],
+                access:[true,'dufused','http://activitystrea.ms/schema/1.0/dufus'],
+                enter:[true,'entered slide',`${customVerbPrefix}enteredSlide`],
                 return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
                 view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
                 complete:[true,'completed course','http://activitystrea.ms/schema/1.0/complete'],
@@ -49,10 +49,9 @@ const params = {
                 Use_custom_login_messages:true,
                 login_message:null,//this is the message displayed below email entry box
                 placeholder_text:null,//this is the placeholder for the email entry box 
-                Allow_user_to_skip_email:false,//when set to true skip email button will not show
-                skip_email_default_value:null,//if skip email buttton is turn on this is the email address it will return
+                Allow_user_to_skip_email:true,//when set to true skip email button will not show
+                skip_email_default_value:true,//if skip email buttton is turn on this is the email address it will return
                 invalid_email_placholder_Message:null//this is the plaeholder text that will be displayed if incorrect emal was displayed
-
     },
     "lrsSettings":{
         reportingToLrs:true,
@@ -68,13 +67,13 @@ const params = {
     quizName: 'test quiz replacement name',
     quizId:`http://quizid/test`,//uses baseID-ActivityName
     remove_play_button_on_mobile:true,
-    parentName:null,
-    baseId:null,//uses base URL and path by default but can be defined to custom URI
+    parentName:'superWrapper Cohort Demo',
+    baseId:'http://www.brianfloyd.me/superwrapper',//uses base URL and path by default but can be defined to custom URI
     returnToLastSlideVisited:true,//TODO:write query to check last slide visited
-    version:'1.1.1'
+    version:'1.1.2'
 };
 
-if(params.consoleLog.version)console.log(`SuperWrapper ${params.version}`);
+if(params.consoleLog.version)console.log(`superWrapper ${params.version}`);
 //TODO:put it regex check for valid IRI for all passed paramter ID's, set to null if invlaid so it defaults
 let xApiController,user,sw,quiz;
 function init(){
@@ -1019,7 +1018,7 @@ class Learner{
             }); 
             sw.login = $('.login-screen');
             sw.placeholder = (params.login.Use_custom_login_messages  && params.login.placeholder_text !==null)?params.login.placeholder_text :"Please enter your email and press enter or submit";
-            sw.footer ="Powered by SuperWrapper";
+            sw.footer ="Powered by superWrapper";
             sw.message= (params.login.Use_custom_login_messages &&params.login.login_message!==null)?params.login.login_message :`Entering an email address will be the user that is reported to the demo LRS, for this
                         demonstration if you would prefer please press the skip button and a demo email
                         will be assinged to you`;
@@ -1082,7 +1081,7 @@ class Learner{
                     "background-color":"orange"
                 }))  .on('click',()=>{
                  
-                    window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skip_email_default_value))?params.login.skip_email_default_value:'user@SuperWrapper.com')})()}`,"_parent");
+                    window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skip_email_default_value))?params.login.skip_email_default_value:'user@superWrapper.com')})()}`,"_parent");
                 });
             }
             $(`<footer class ="footer">${sw.footer}</footer>`)

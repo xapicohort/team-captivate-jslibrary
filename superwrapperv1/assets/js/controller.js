@@ -1,25 +1,21 @@
-
-      
 //TODO: look for instances of toLowerCase();
 //MATCHING QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are all working with the exception of matching
-
-
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "display_language":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
-                access:[true,'accessed course','http://activitystrea.ms/schema/1.0/access'],
-                enter:[true,'entered',`${customVerbPrefix}enteredSlide`],
+                access:[true,'dufused','http://activitystrea.ms/schema/1.0/dufus'],
+                enter:[true,'entered slide',`${customVerbPrefix}enteredSlide`],
                 return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
                 view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
                 complete:[true,'completed course','http://activitystrea.ms/schema/1.0/complete'],
-                open: [false,'opened','http://activitystrea.ms/schema/1.0/open'],
+                open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
                 pressClickBox:[true, 'clicked box'],//same verb as above
-                focus:[false,'focused','http://id.tincanapi.com/verb/focused'],
-                unfocus:[false,'unfocused','http://id.tincanapi.com/verb/unfocused'],
-                experience:[false, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
+                focus:[true,'focused','http://id.tincanapi.com/verb/focused'],
+                unfocus:[true,'unfocused','http://id.tincanapi.com/verb/unfocused'],
+                experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
             "quiz":
             {
                 start:[true,'started','http://activitystrea.ms/schema/1.0/start'],
@@ -53,10 +49,9 @@ const params = {
                 Use_custom_login_messages:true,
                 login_message:null,//this is the message displayed below email entry box
                 placeholder_text:null,//this is the placeholder for the email entry box 
-                Allow_user_to_skip_email:false,//when set to true skip email button will not show
-                skip_email_default_value:null,//if skip email buttton is turn on this is the email address it will return
+                Allow_user_to_skip_email:true,//when set to true skip email button will not show
+                skip_email_default_value:true,//if skip email buttton is turn on this is the email address it will return
                 invalid_email_placholder_Message:null//this is the plaeholder text that will be displayed if incorrect emal was displayed
-
     },
     "lrsSettings":{
         reportingToLrs:true,
@@ -69,15 +64,16 @@ const params = {
         production_endpoint:null    
     
     },   
-    "quizName": 'test quiz replacement name',
-    "quizId":`http://quizid/test`,//uses baseID-ActivityName
-    "remove_play_button_on_mobile":true,
-    "parentName":null,
-    "baseId":null,//uses base URL and path by default but can be defined to custom URI
-    "returnToLastSlideVisited":true,//TODO:write query to check last slide visited
+    quizName: 'test quiz replacement name',
+    quizId:`http://quizid/test`,//uses baseID-ActivityName
+    remove_play_button_on_mobile:true,
+    parentName:'superWrapper Cohort Demo',
+    baseId:'http://www.brianfloyd.me/superwrapper',//uses base URL and path by default but can be defined to custom URI
+    returnToLastSlideVisited:true,//TODO:write query to check last slide visited
+    version:'1.1.2'
 };
 
-if(params.consoleLog.version)console.log('SuperWrapper v1.1.1');
+if(params.consoleLog.version)console.log(`superWrapper ${params.version}`);
 //TODO:put it regex check for valid IRI for all passed paramter ID's, set to null if invlaid so it defaults
 let xApiController,user,sw,quiz;
 function init(){
@@ -93,7 +89,7 @@ function init(){
          //this call is so the first slide produces the parent launch statement
          //@params "Verb_to_use_when_file_opened":["launched","accessed","experienced"]
          //it is the only time the argument will be null
-         if(params.verbs.access[0])xApiController.defineStmt(null);
+         xApiController.defineStmt(null);
         //define that course is launched for xApiControllerr.cpListener()
         xApiController.launchFlag =true;
         //adds 2 event listeners, one is for any interaction with the DOM 
@@ -184,7 +180,6 @@ constructor(store){
         })();
     };
     defineStmt(passedActivity,verb){
-      
         let prevSlideIndex =(sw.var('cpInfoPrevSlide'));
         if(prevSlideIndex ===0  || passedActivity===null){
             //if there is no previous slide index the project was launched and captures
@@ -201,33 +196,41 @@ constructor(store){
         this.videoName =this.activity+" Video Content";
         this.verbId=this.verb[`${verb}Id`];
         this.verbName=this.verb[verb];
+        this.send = null;
         //first if is for access verb, since access happens when project is opened access is not passed into 
         //definestmt like it is for all other instances
         if (arguments[0]===null  && arguments.length==1){
-            this.verbName =this.verb.access;
-            this.verbId=this.verb.accessId;
-            this.activityId=this.parentId;
-            this.activity=this.parentName;
-            this.type = this.activityType.course;
-            this.activityDescription = `The captivate project ${this.activity} was launched`;
+            verb='access';
              }
         switch (verb){
+        case 'access':
+                this.verbName =this.verb[verb];
+                this.verbId=this.verb[`${verb}Id`];
+                this.activityId=this.parentId;
+                this.activity=this.parentName;
+                this.type = this.activityType.course;
+                this.activityDescription = `The captivate project ${this.activity} was launched`;
+                this.send=params.verbs[verb][0];;
+        break;
         case'enter':
             this.type = this.activityType.slide;
             this.activityDescription = `Slide ${this.activity} was entered`; 
             if (this.activity.substr(0,10)==='xapi_menu_')this.activity.slice(10,this.activity.length)
+            this.send=params.verbs[verb][0];;
         break;
         case 'answer':
             this.type =this.activityType.question;
             this.activityDescription =`Question:${quiz.question}`;
             this.activity=`${quiz.question}`;
             this.activityId=`${this.idPrefix}quiz/${quiz.questionId}`;
+            this.send = params.verbs.quiz[verb][0];
         break;
         case  'review':
             this.type=this.activityType.question;
             this.activityDescription =`Review of quiz slide ${xApiController.currentSlideIndex}`;
-            this.activity = `Review of slide named ${xApiController.currentSlideName}`;
+            this.activity = `slide named ${xApiController.currentSlideName}`;
             this.activivityId = `${this.idPrefix}reveiwedquiz/${sw.insert_(xApiController.currentSlideName)}`;
+            this.send = params.verbs.quiz[verb][0];
             break;
         case'pressed the button': 
         case'pressed the click box':
@@ -237,16 +240,18 @@ constructor(store){
                 this.activityDescription = `${this.activity} button was interacted with`;
             if(verb==='pressed the click box'){
                 this.verbName=this.verb.pressClickBox; 
-            }  
+            }   
         break;    
         case'skip':
             this.activityDescription =`Skipped question slide ${passedActivity}`;
             this.type =this.activityType.question;
+            this.send= params.verbs.video[verb][0]
         break;
         case'complete':
             this.activityDescription=`Completed by reaching the slide of ${passedActivity}`;
             this.type = this.activityType.course;
             this.activityId=this.parentId;
+            this.send=params.verbs[verb][0];;
         break;
         case 'start':
         case 'finish':
@@ -255,14 +260,17 @@ constructor(store){
             this.activity = params.quizName || quiz.quizName;
             this.activityId = params.quizId ||`${this.idPrefix}quiz/${sw.insert_(quiz.quizName)}`;
             this.type = this.activityType.assessment;
+            this.send= params.verbs.quiz[verb][0]
         break;
         case 'return':
                 this.type = this.activityType.slide;
                 this.activity =this.activity.slice(10,this.activity.length)
-                this.activityDescription = `Returned to ${this.activity} Menu slide `;  
+                this.activityDescription = `Returned to ${this.activity} Menu slide `; 
+                this.send=params.verbs[verb][0];; 
             break;
         case'view':
             this.activityDescription =`Slide ${this.activity} was viewed`;
+            this.send=params.verbs[verb][0];;
         break;
         case 'play':
         case 'pause':
@@ -275,6 +283,7 @@ constructor(store){
             this.type=this.activityType.video;
             this.activityDescription=`Slide ${this.currentSlideIndex} Video - ${passedActivity}`
             this.videoDuration=($(this.video)[0].duration);
+            this.send= params.verbs.video[verb][0]
         break;
        case 'focus':
        case 'unfocus':
@@ -282,13 +291,15 @@ constructor(store){
             this.type = this.activityType.slide
             this.activityDescription = `Slide ${this.activity} had a focus change`; 
             this.totalDurationTime = (this.focusEventTime);
+            this.send=params.verbs[verb][0];
        break;
        default:
            break;
         }
     this.createStmt();
     this.prepareStmtToSend();
-    this.sendStmt();
+
+    if(this.send)this.sendStmt();
     };
     createActor(){
         return new TinCan.Agent({
@@ -333,7 +344,7 @@ constructor(store){
         return new TinCan.Context(
             {
                 "registration":this.registrationId,
-                "revision":this.revision,
+                //"revision":this.revision,
                 "language":params.display_language[0],
                 "extensions": {
                     "http://id.tincanapi.com/extension/invitee": {
@@ -589,15 +600,13 @@ constructor(store){
             window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER',e=>{
             this.slideVids=[];
             this.video=null;
-            if (sw.var('cpInReviewMode')){
-                this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'review')
-                }
+      
             //sw.typeText();
             this.quizhandler(e);
             if(sw.var('cpInQuizScope')==0){this.quizStarted = false};
             if(sw.var('cpInQuizScope')==true  && !this.quizStarted){
                 if(quiz.question ===null){
-                    if(params.verbs.quiz.start[0])this.defineStmt(quiz.quizName,'start');
+                    this.defineStmt(quiz.quizName,'start');
                     this.quizStartTime = new Date().getTime();
                     this.quizStarted = true;
                 }
@@ -612,13 +621,17 @@ constructor(store){
                 this.quizFinishTime = new Date().getTime();
                 this.defineStmt(quiz.quizName,'finish');
             }
+      
             this.currentSlideName = sw.var('cpInfoCurrentSlideLabel');
             //update index - cp Index starts as 0, slides start at 1
             this.currentSlideIndex=sw.var('cpInfoCurrentSlideIndex')+1;
             this.totalSlides=sw.var('cpInfoSlideCount');
            if(this.currentSlideIndex === this.totalSlides && params.verbs.complete){
-                if(params.verbs.complete[0])this.defineStmt(null,'complete');
-                this.defineStmt(this.slides[this.slides.length-2],'view')
+              this.defineStmt(null,'complete');
+                if (sw.var('cpInReviewMode')){
+                    this.defineStmt(this.slides[this.slides.length-2],'review')
+                    }else{
+                this.defineStmt(this.slides[this.slides.length-2],'view')}
                 this.launchFlag=true;
            };
             if(this.slideEnterTime===null){
@@ -630,20 +643,25 @@ constructor(store){
             let milliSeconds = Math.floor((this.slideExitTime-this.slideEnterTime));
             this.totalDurationTime = sw.convertMilliSecondsToISO(milliSeconds);
             if(!this.launchFlag){
+                if (sw.var('cpInReviewMode')){
+                    this.defineStmt(this.slides[this.slides.length-2],'review')
+                    }else{
                  if(params.verbs.view[0]){this.defineStmt(this.slides[this.slides.length-1],'view');
+                    }
                  }
                  //this listener is for slide change, so the end of the last slide now becomes
                  //beginning time for this slide
                  this.slideEnterTime = this.slideExitTime
               }else this.launchFlag=false;
                 if(this.currentSlideName.substr(0,10)==='xapi_menu_' && !this.menuFlag){
-                    if(params.verbs.enter[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'enter')
+                   this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'enter')
                     this.menuFlag=true;
                 }
                 else if (this.currentSlideName.substr(0,10)==='xapi_menu_' && this.menuFlag){
-                    if(params.verbs.return[0])this.defineStmt (this.currentSlideName,'return');
+                    this.defineStmt (this.currentSlideName,'return');
                 } else{
-                    if(params.verbs.enter[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'enter')
+                    if (!sw.var('cpInReviewMode')){
+                    this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'enter')}
                 }
               
                if(typeof e.Data.videos !=="undefined"){
@@ -685,7 +703,7 @@ constructor(store){
                     this.groupName ="A grouping category for buttons";
                     this.groupId=`${this.idPrefix}group/resumeButtons`
                     this.groupType=this.activityType.buttonGroup
-                    if(params.verbs.pressButton[0])xApiController.defineStmt(activity,verb);
+                    xApiController.defineStmt(activity,verb);
                    
                 }else{
                     this.groupName =null;
@@ -695,13 +713,13 @@ constructor(store){
                  });
             window.cpAPIEventEmitter.addEventListener('CPAPI_QUESTIONSUBMIT',e=>{
                 this.quizhandler(e) 
-                if(params.verbs.quiz.answer){
+                
                     this.defineStmt(quiz.question,'answer');
-                }
+                
             })
             window.cpAPIEventEmitter.addEventListener('CPAPI_QUESTIONSKIP',e=>{
                 this.quizhandler(e);
-                if(params.verbs.quiz.skip)this.defineStmt(this.slides[this.slides.length-1],'skip')
+                this.defineStmt(this.slides[this.slides.length-1],'skip')
             })
             window.cpAPIEventEmitter.addEventListener('CPAPI_VARIABLEVALUECHANGED','v_increment',e=>{
             });
@@ -712,14 +730,14 @@ constructor(store){
                     this.refocusStartTime=new Date().getTime();
                     milliSeconds = Math.floor((this.refocusStartTime-this.unfocusStartTime));
                     this.focusEventTime = sw.convertMilliSecondsToISO(milliSeconds);
-                    if(params.verbs.focus[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'focus')}
+                    this.defineStmt(sw.var('cpInfoCurrentSlideLabel'),'focus')}
                 else {
                     this.unfocusStartTime = new Date().getTime();
                     if(!this.refocusStartTime) {milliSeconds = Math.abs((this.slideEnterTime - this.unfocusStartTime))}
                     else  { milliSeconds = Math.floor((this.unfocusStartTime- this.refocusStartTime))
                     }
                     this.focusEventTime = sw.convertMilliSecondsToISO(milliSeconds);
-                    if(params.verbs.unfocus[0])this.defineStmt(sw.var('cpInfoCurrentSlideLabel'), 'unfocus')}
+                    this.defineStmt(sw.var('cpInfoCurrentSlideLabel'), 'unfocus')}
             })
     };
     DOMListener(callback){
@@ -849,14 +867,11 @@ class SuperWrapper{
         return (input.indexOf('_') > 0) ? input.split('_').join(' '):input;
     };
     uriCheck(uri){
-    
         let validUri = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
         let regexUri = /^([a-z][a-z0-9+.-]*):(?:\/\/((?:(?=((?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*))(\3)@)?(?=(\[[0-9A-F:.]{2,}\]|(?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*))\10)?)(?:\?(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\11)?(?:#(?=((?:[a-z0-9-._~!$&'()*+,;=:@\/?]|%[0-9A-F]{2})*))\12)?$/i;
-
         let valid = regexUri.test(uri);   
-   
         if(valid)return uri
-        else {console.log(`%c Passed URI ${uri} does not match requirmennts.`,'color:orange');return null;}
+        else {console.log(`%c User set IRI ${uri} does not match requirmenents.`,'color:orange');return null;}
     };
     checkLoad(element,callback){//helper fucntion to wait for element to load before taking action
         const elementInterval = setInterval(checkElement, 500, callback)
@@ -1003,7 +1018,7 @@ class Learner{
             }); 
             sw.login = $('.login-screen');
             sw.placeholder = (params.login.Use_custom_login_messages  && params.login.placeholder_text !==null)?params.login.placeholder_text :"Please enter your email and press enter or submit";
-            sw.footer ="Powered by SuperWrapper";
+            sw.footer ="Powered by superWrapper";
             sw.message= (params.login.Use_custom_login_messages &&params.login.login_message!==null)?params.login.login_message :`Entering an email address will be the user that is reported to the demo LRS, for this
                         demonstration if you would prefer please press the skip button and a demo email
                         will be assinged to you`;
@@ -1066,7 +1081,7 @@ class Learner{
                     "background-color":"orange"
                 }))  .on('click',()=>{
                  
-                    window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skip_email_default_value))?params.login.skip_email_default_value:'user@SuperWrapper.com')})()}`,"_parent");
+                    window.open(`${this.url.href}?mbox=${(()=>{return ((user.testEmail(params.login.skip_email_default_value))?params.login.skip_email_default_value:'user@superWrapper.com')})()}`,"_parent");
                 });
             }
             $(`<footer class ="footer">${sw.footer}</footer>`)
@@ -1117,17 +1132,18 @@ class VideoObject{
             if($(this.video)[0].paused===false){
                 xApiController.video=this.video;
                 xApiController.defineStmt(this.name,'play');
+                this.getStartTime= this.video.currentTime; 
                 clearInterval(playFlag);
             }
             },1000)
            
      
-        $(`#btmControl${this.name}`).on('click', ()=>{
+        // $(`#btmControl${this.name}`).on('mousedown', ()=>{
         
-             this.getStartTime= this.video.currentTime; 
-        })
+        //      this.getStartTime= this.video.currentTime; 
+        // })
         this.listener = $(`#btmControl${this.name}`).on('mousedown',e=>{
-
+                console.log($(e.t))
                 let playbarAction = ($(e.target)[0].innerText);
                 console.log(playbarAction)
                 let playbar;
@@ -1135,16 +1151,19 @@ class VideoObject{
                 (playbarAction.indexOf('set to')> -1)? playbar = playbarAction.split("set to")[0]:playbar = playbar;
                 switch(playbar.trim()){
                     case 'Stop':
+                            this.getStartTime= this.video.currentTime; 
                         this.pauseTime.push(this.video.currentTime);
                         if(params.consoleLog.videoLog)console.log(`stopped at ${this.pauseTime}`);
                         break;
                     case 'Pause':
+                            this.getStartTime= this.video.currentTime; 
                             this.pauseTime.push(this.video.currentTime);
                             if(params.consoleLog.videoLog)console.log(`paused at ${this.pauseTime[this.pauseTime.length-1]}`);
                             xApiController.pauseTime=this.pauseTime[this.pauseTime.length-1];
                             xApiController.defineStmt(this.name,'pause');
                             break;
                     case 'Play':
+                            this.getStartTime= this.video.currentTime; 
                         if(params.consoleLog.videoLog)console.log(`played after pause/stop at ${this.pauseTime[this.pauseTime.length-1]}`)
                         break;
                     case 'Progress':
@@ -1152,6 +1171,10 @@ class VideoObject{
                             a = a.split('at')[1];
                             a = a.split('seconds')[0];
                             //TODO:test to ensure that seconds don't become minutes on videos with duration >60 seconds
+                           
+                            $(`#btmControl${this.name}`).on('mouseup',(e)=>{
+                                console.log('fire');
+                                
                             let scrubTime = this.video.currentTime - this.getStartTime ;
                             let rawTime = scrubTime;
                             (scrubTime <0) ? scrubTime=`scrubbed back ${Math.abs(scrubTime)}`:scrubTime=`scrubbed forward ${Math.abs(scrubTime)}`
@@ -1162,29 +1185,29 @@ class VideoObject{
                             xApiController.scrubTime=scrubTime;
                             xApiController.rawScrubTime=Math.abs(rawTime);
                             xApiController.defineStmt(this.name,'scrub');
+                            this.getStartTime= this.video.currentTime; 
+                            $(`#btmControl${this.name}`).unbind('mouseup');
                             }
+                         })
                         break;
                     case 'Mute':
                         if(params.consoleLog.videoLog) console.log('mute at'+$(this.video)[0].currentTime);
-                        if(params.verbs.video.mute){
                             xApiController.pauseTime=$(this.video)[0].currentTime;
                             xApiController.defineStmt(this.name,'mute');
-                        }
-                       
                         break;
                     case 'Unmute':
-                        if(params.consoleLog.videoLog) xApiController.defineStmt(this.name,'unmute');
-                        if(params.verbs.video.unmute)xApiController.pauseTime=$(this.video)[0].currentTime;
+                        xApiController.defineStmt(this.name,'unmute');
+                        xApiController.pauseTime=$(this.video)[0].currentTime;
                         break;
                     case 'Volume':
                         if(params.consoleLog.videoLog)console.log(`adjust to ${this.newVolume}`);
-                        if(params.verbs.video.adjustVolume[0]){
+                      
                         this.newVolume = playbarAction.split('set to')[1];
                         xApiController.pauseTime= this.startVolume;
                         xApiController.newTime =this.newVolume;
                         xApiController.defineStmt(this.name,'adjust');
                         this.startVolume=this.newVolume;
-                        }
+                        
                         break;
                     case 'Full Screen':
                         if(params.consoleLog.videoLog)console.log('Full Screen');
