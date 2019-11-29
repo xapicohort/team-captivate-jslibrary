@@ -1,5 +1,5 @@
 
-[Setup](#Basic-set-up-and-instructios)
+[Setup](#Basic-set-up-and-instructions:)
 
 # Our Captivate JS library team repository
 
