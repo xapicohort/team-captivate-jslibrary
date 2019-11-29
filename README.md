@@ -1,5 +1,5 @@
 
-[Setup](#Basic-set-up-and-instructions)
+[Setup](#Basic-set-up-and-instructions)</br>
 [Updates](#Update-Log)
 
 # Our Captivate JS library team repository
