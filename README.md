@@ -1,6 +1,5 @@
 
 [Setup](#Basic-set-up-and-instructions)
-
 [Updates](#Update-Log)
 
 # Our Captivate JS library team repository
