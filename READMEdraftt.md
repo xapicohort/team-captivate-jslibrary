@@ -1,5 +1,5 @@
-[Overview](#Overview)
-         [Navigation](#Navigation)
+[Overview](#Overview)</br>
+         [Navigation](#Navigation)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
 
 [Updates](#Update-Log)
@@ -18,9 +18,9 @@ How does it work ? - Captivate has built in listeners and variables (API's) that
 This is a list of the activities/verbs that the wrapper will send, broken into 3 sections.
 Naviagation, Event Video, and Quizzing.
 
-##Navigation
+## Navigation
 
-| Verb      | When it triggers/sends to LRS | Additional Context  |
+|Verb       | When it triggers/sends to LRS | Additional Context  |
 | --------- |:-----------------------------:| -------------------:|
 | access    |When course is launched        |[Parent ID](#Parent-Id)|
 | enter     |When user enters a slide       |Slide info,Proj info |    
