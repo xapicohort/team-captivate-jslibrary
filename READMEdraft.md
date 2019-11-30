@@ -5,8 +5,8 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Event Video Events](#Event-video-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
    #### xAPI Properies
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Actor][#Actor]
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent][#Parent-id]
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Actor](#Actor)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent][(#Parent-id)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
 [Updates](#Update-Log)
 
