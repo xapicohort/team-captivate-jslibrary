@@ -1,7 +1,7 @@
 [Overview](#Overview)</br>
-   [Navigation Events](#Navigation-events)</br>
-   [Event Video Events](#Event-vdeo-events)</br>
-   [Quiz Events](#Quiz-events)></br>
+   *[Navigation Events](#Navigation-events)</br>
+   *[Event Video Events](#Event-video-events)</br>
+   *[Quiz Events](#Quiz-events)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
 
 [Updates](#Update-Log)
