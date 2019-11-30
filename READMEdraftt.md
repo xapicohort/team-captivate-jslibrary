@@ -1,9 +1,8 @@
 [Overview](#Overview)</br>
-   *[Navigation Events](#Navigation-events)</br>
-   *[Event Video Events](#Event-video-events)</br>
-   *[Quiz Events](#Quiz-events)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Navigation Events](#Navigation-events)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Event Video Events](#Event-video-events)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
-
 [Updates](#Update-Log)
 
 # Our Captivate JS library team repository
@@ -69,10 +68,10 @@ Parent ID is the main course ID - superWrapper creates this using the prefixId(#
 
 ## Parent Name
 
-The Parent Name is taken first from params.parentName if set, 2nd from it will pull it from Capivate using the cpInfoProjectName variable.  
+The Parent Name is taken first from params.parentName if set, 2nd from it will pull it from Capivate using the cpInfoProjectName variable.  This is set in Captivate Prefrences>Project>Information -Project Name
 
 ## Parent Description
-The Parent Descripion is taken first from params.parentDescription if set, 2nd from it will pull it from Capivate using the cpInfoDescription variable.  
+The Parent Descripion is taken first from params.parentDescription if set, 2nd from it will pull it from Capivate using the cpInfoDescription variable.   This is set in Captivate Prefrences>Project>Information -Description
 
 
 
