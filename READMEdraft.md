@@ -1,3 +1,6 @@
+# Our Captivate JS library team repository
+
+
 [Overview](#Overview)</br>
    [Actor](#Actor)</br>
    #### Verbs(#Verbs)
@@ -6,18 +9,20 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
    #### xAPI Properies
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Actor](#Actor)</br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent][(#Parent-id)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent](#Parent-id)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
 [Updates](#Update-Log)
 
-# Our Captivate JS library team repository
+
 
 # Overview
-This wrapper was designed to be a companion to an Adobe Captivate HTML publish package.  It is designed to work from an LMS where SCORM reporting is enabled, or any course even if SCORM is not enabled.
+This wrapper was designed to be a companion to an Adobe Captivate HTML publish package.  It is designed to work from a LMS where SCORM reporting is enabled, or any course even if SCORM is not enabled.  It will not interupt or change SCORM reporting but will also report xAPI to an LRS.
 
-It will set up a connection to an LRS and send xAPI statements from the Captivate publish package with very little needed from the user to make it work.  Follow the [Setup](#Basic-set-up-and-instructions) instructions below, and the wrapper does the rest.
+It handles connection to an LRS and sends xAPI statements from the Captivate publish package with very little needed from the user to make it work.  Follow the [Setup](#Basic-set-up-and-instructions)instructions below, and the wrapper does the rest.
 
 How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magically (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
+
+Here are are all of the setup configurations for each xAPI Property and a description of when they fire
 
 ## Actor
 Actor is who is taking the course.  This can populate one of 3 ways with superWrapper
@@ -124,25 +129,54 @@ The Parent Name is taken first from params.parentName if set, 2nd from it will p
 ### Parent Description
 The Parent Descripion is taken first from params.parentDescription if set, 2nd from it will pull it from Capivate using the cpInfoDescription variable.   This is set in Captivate Prefrences>Project>Information -Description
 
-### Quizzing
+## Quizzing
 
-## Quiz name
+### Quiz name
 The Quiz Name is taken first from params.quizName if set.  If this value is null it will create quiz take the paren name and append the word Quiz on the end.   
 
-## Quiz Id
+### Quiz Id
 The Quiz ID is taken first from params.quizId if set.  If this value is null it will create a quiz id based on the parent name and append the /quiz/ on the end prior to parent on IRI.
 
-## Quiz Description
+### Quiz Description
 The Quiz Description is taken first from params.quizDescripion if set.  If this value is null it will creted a description that is stated or finished Assesment and the [Quiz Name](#Quiz-name)
 
 
-## Quiz Question Name
+### Quiz Question Name
 The quiz question name is the question itself.
 
-## Quiz Question ID
+### Quiz Question ID
 The quiz ID with the Adobe Captivate Ineractioon ID taken from quiz properites avaialble from the quiz sumbit event.data.cpData.interactionID using the event listener 
 
-''' javascript window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER')'''
+``` javascript window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER')```
+
+### cmi5 xAPI
+Each quiz question type has its own specific context definiton designed for xAPI to maximize LRS reporting feaatures.
+
+### Quiz Results
+
+Here is a standard question Object.result from xapi
+
+```javascript   
+ {"result": {
+    "score": {
+      "scaled": 0.22,
+      "raw": 10,
+      "min": 0,
+      "max": 10
+    },
+    "success": true,
+    "completion": true,
+    "duration": "PT0H0M26S",
+    "response": "Scorm 1.2,Scorm 2004,xAPI"
+  }} 
+  ```
+
+  The scaled score is the percentage contributed to overall quiz final score
+  The max score is the number of points assigned in captivate to questions
+  The raw score is the raw number of points the user achieved for the questioin
+  Success is whether the question was answered correctly
+  Duration was the amount of time th user took to answer he question
+  response was he users response to the question (this example  was  arrange in order)
 
 ## Preface:
 
