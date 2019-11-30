@@ -1,5 +1,7 @@
-
+[Overview](#Overview)
+         [Navigation](#Navigation)
 [Setup](#Basic-set-up-and-instructions)</br>
+
 [Updates](#Update-Log)
 
 # Our Captivate JS library team repository
@@ -13,17 +15,34 @@ It will set up a connection to an LRS and send xAPI statements from the Captivat
 How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magically (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
 
 
-Here is a list of the activities/verbs that the wrapper will send, broken into 3 sections.
+This is a list of the activities/verbs that the wrapper will send, broken into 3 sections.
 Naviagation, Event Video, and Quizzing.
 
+##Navigation
 
+| Verb      | When it triggers/sends to LRS | Additional Context  |
+| --------- |:-----------------------------:| -------------------:|
+| access    |When course is launched        |[Parent ID](#Parent-Id)|
+| enter     |When user enters a slide       |Slide info,Proj info |    
+| return    |When returning to a menu slide |                     |
+| view      |When leaving a slide           |Duration             |
+| complete  |When last slide is entered     |                     |
+| pressed   |Tap/Click of button or clickbox|                     |
+| focus     |When fouus on window happens   |                     |
+| unfocus   |When focus on window is lost   |                     |
 
-| Verb      | When it triggers          | Additional Context  | Default Verb Id               |
-| --------- |:-------------------------:| -------------------:|------------------------------:|
-| enter     | When user enters a slide  | Slide #,path taken  |http://superwrapper/verb/access|      
-| access    | When course is launched   | Parent ID           |http://activitystrea.m         |
+### Parent Id
 
-
+ access:[true,'accessed','http://activitystrea.ms/schema/1.0/access'],
+                enter:[true,'entered slide',`${customVerbPrefix}enteredSlide`],
+                return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
+                view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
+                complete:[true,'completed course','http://activitystrea.ms/schema/1.0/complete'],
+                open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
+                pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],pressClickBox:[true, 'clicked box'],//same verb as above
+                focus:[true,'focused','http://id.tincanapi.com/verb/focused'],
+                unfocus:[true,'unfocused','http://id.tincanapi.com/verb/unfocused'],
+                experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
 
 
 ## Preface:
