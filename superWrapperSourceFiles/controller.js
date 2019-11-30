@@ -5,7 +5,7 @@ const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "display_language":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
-                access:[true,'dufused','http://activitystrea.ms/schema/1.0/dufus'],
+                access:[true,'accessed','http://activitystrea.ms/schema/1.0/access'],
                 enter:[true,'entered slide',`${customVerbPrefix}enteredSlide`],
                 return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
                 view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
