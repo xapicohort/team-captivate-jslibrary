@@ -1,6 +1,7 @@
 [Overview](#Overview)</br>
-         [Navigation Events](#Navigation-events)</br>
-         [Event Video Events](#Event-vdeo-events)</br>
+   [Navigation Events](#Navigation-events)</br>
+   [Event Video Events](#Event-vdeo-events)</br>
+   [Quiz Events](#Quiz-events)></br>
 [Setup](#Basic-set-up-and-instructions)</br>
 
 [Updates](#Update-Log)
@@ -33,8 +34,19 @@ Naviagation, Event Video, and Quizzing.
 | unfocus   |When focus on window is lost   |                     |
 
 
-## Event Video events
+## Event video events
 
+|Verb       | When it triggers/sends to LRS | Additional Notes    |
+| --------- |:-----------------------------:| -------------------:|
+| play      |When video is played           |[pid](#Parent-Id)    |
+| pause     |When video is paused           |Slide info,Proj info |    
+| scrub     |When video is scrubbed         |                     |
+| watch     |When end of video is reached   |Duration             |
+| mute      |When video is muted            |                     |
+| unmute    |When video is unmutued         |                     |
+| adjust Vol|When volume is adjusted        |                     |
+
+## Quiz events
 |Verb       | When it triggers/sends to LRS | Additional Notes    |
 | --------- |:-----------------------------:| -------------------:|
 | play      |When video is played           |[pid](#Parent-Id)    |
