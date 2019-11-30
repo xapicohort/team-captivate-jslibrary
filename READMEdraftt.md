@@ -1,4 +1,5 @@
-[Overview](#Overview)</br>
+### [Overview](#Overview)</br>
+   #### Verb Events
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Navigation Events](#Navigation-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Event Video Events](#Event-video-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
@@ -46,6 +47,7 @@ Naviagation, Event Video, and Quizzing.
 | adjust Vol|When volume is adjusted        |                     |
 
 ## Quiz events
+
 |Verb       | When it triggers/sends to LRS | Additional Notes    |
 | --------- |:-----------------------------:| -------------------:|
 | play      |When video is played           |[pid](#Parent-Id)    |
@@ -58,19 +60,19 @@ Naviagation, Event Video, and Quizzing.
 
 
 
-### Parent 
+## Parent 
 
 Parent is the main course identifier and can be broken into 3 main parts.  It will be the activity for the access and completed verb, because we are reffering to the actual course(the parent) with these 2 verbs.  For all other verbs these parent properies will be use is the parent in xAPI context activities as the parent.
 
-## Parent Id(pid)
+### Parent Id(pid)
 
 Parent ID is the main course ID - superWrapper creates this using the prefixId(#Prefix-Id) annd joining it with the [Parent name](#Parent-Name).  
 
-## Parent Name
+### Parent Name
 
 The Parent Name is taken first from params.parentName if set, 2nd from it will pull it from Capivate using the cpInfoProjectName variable.  This is set in Captivate Prefrences>Project>Information -Project Name
 
-## Parent Description
+### Parent Description
 The Parent Descripion is taken first from params.parentDescription if set, 2nd from it will pull it from Capivate using the cpInfoDescription variable.   This is set in Captivate Prefrences>Project>Information -Description
 
 
