@@ -5,7 +5,7 @@ const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "display_language":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
     "verbs":{
-                access:[true,'dufused','http://activitystrea.ms/schema/1.0/access'],
+                access:[true,'accessed','http://activitystrea.ms/schema/1.0/access'],
                 enter:[true,'entered slide',`${customVerbPrefix}enteredSlide`],
                 return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
                 view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
@@ -64,10 +64,12 @@ const params = {
         production_endpoint:null    
     
     },   
-    quizName: 'test quiz replacement name',
-    quizId:`http://quizid/test`,//uses baseID-ActivityName
+    quizName: null,//uses parent activity name with quiz appended to the end when null
+    quizId:null,//uses baseID-ActivityName/quiz/parent/parentName when set to  null
+    quizDescription:null, //combines verb and assessment and quizname when set to null
     remove_play_button_on_mobile:true,
     parentName:'superWrapper Cohort Demo',
+    parentDescription:null,
     baseId:'http://www.brianfloyd.me/superwrapper',//uses base URL and path by default but can be defined to custom URI
     returnToLastSlideVisited:true,//TODO:write query to check last slide visited
     version:'1.1.2'
@@ -116,8 +118,8 @@ constructor(store){
         })();
         this.parentName = params.parentName || sw.var('cpInfoProjectName');
         this.parentId = `${this.idPrefix}parent/${sw.insert_(this.parentName)}`;
-        this.parentDescription =sw.var('cpInfoDescription');
-        this.activityDescription='null';
+        this.parentDescription = params.parentDescription ||sw.var('cpInfoDescription');
+        this.activityDescription=null;
         this.slideEnterTime = null;
         this.menuFlag = false;
         this.pauseTime=null;
@@ -256,9 +258,9 @@ constructor(store){
         case 'start':
         case 'finish':
            
-            this.activityDescription=`${verb}ed Assessment ${quiz.quizName}`;
+            this.activityDescription=params.quizDescription ||`${verb}ed Assessment ${quiz.quizName}`;
             this.activity = params.quizName || quiz.quizName;
-            this.activityId = params.quizId ||`${this.idPrefix}quiz/${sw.insert_(quiz.quizName)}`;
+            this.activityId = params.quizId ||`${this.idPrefix}parent/quiz/${sw.insert_(quiz.quizName)}`;
             this.type = this.activityType.assessment;
             this.send= params.verbs.quiz[verb][0]
         break;

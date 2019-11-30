@@ -64,8 +64,8 @@ const params = {
         production_endpoint:null    
     
     },   
-    quizName: 'test quiz replacement name',
-    quizId:`http://quizid/test`,//uses baseID-ActivityName
+    quizName: null,//uses 
+    quizId:null,//uses baseID-ActivityName
     remove_play_button_on_mobile:true,
     parentName:'superWrapper Cohort Demo',
     parentDescription:null,

@@ -1,24 +1,45 @@
-### [Overview](#Overview)</br>
-   #### Verb Events
+[Overview](#Overview)</br>
+   [Actor](#Actor)</br>
+   #### Verbs(#Verbs)
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Navigation Events](#Navigation-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Event Video Events](#Event-video-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
+   #### xAPI Properies
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Actor][#Actor]
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent][#Parent-id]
 [Setup](#Basic-set-up-and-instructions)</br>
 [Updates](#Update-Log)
 
 # Our Captivate JS library team repository
 
 # Overview
-
 This wrapper was designed to be a companion to an Adobe Captivate HTML publish package.  It is designed to work from an LMS where SCORM reporting is enabled, or any course even if SCORM is not enabled.
 
 It will set up a connection to an LRS and send xAPI statements from the Captivate publish package with very little needed from the user to make it work.  Follow the [Setup](#Basic-set-up-and-instructions) instructions below, and the wrapper does the rest.
 
 How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magically (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
 
+## Actor
+Actor is who is taking the course.  This can populate one of 3 ways with superWrapper
 
-This is a list of the activities/verbs that the wrapper will send, broken into 3 sections.
-Naviagation, Event Video, and Quizzing.
+### Actor Scorm
+If the course is published as a Scorm course and run from and LMS superWrapper will look for the SCORM object and get the actor from scorm.LearnerId and scorm.Name - If scorm.learnerID is an email address this will become actor.mbox, if it is not a valid email actor.mbox will populating the actor.name with spaces removed and joining it with @superwrapper.com
+
+actor.name will populate from scorm.Name
+
+### Actor via mbox or mailto parameter
+If no Scorm value is present the next place superWrapper will go is the url parameter.  An actor can be passed in through a url using ?mailto= or ?mbox= parameters.
+
+actor.mbox will populate from this passed parameter
+actor.name will populate from this passed parameter split at the @ symbol (first half of email)
+
+example: http://superwraper/exampleonlynotaworkinglink?mailto=bfloyd@brianfloyd.me
+
+### Actor via superWrapper Override
+If the 1st 2 methods do not yield a actor then superWrapper will presnet login screen will hide the captivate object and display a prompt to enter an email.  The captions in this on this login screen and the ability to skip is avaialbe in params.login parameters.
+
+## Verbs
+Below are the different events that superWrapper on and their respective verb
 
 ## Navigation events
 
@@ -60,22 +81,68 @@ Naviagation, Event Video, and Quizzing.
 
 
 
-## Parent 
+## Activity
+Activity is the name the description of the event that that verb is acting on.  So the activity could be the course, a slide, a video, a button, a quiz, etc.  
 
+A few examples:
+   Brian 'entered' slide first slide
+   Brian 'accessed course' Captivate Demo
+   Brian 'pressed' show answer button
+
+In  the first example the name of slide (Captivate Properties Name) is used as the activity
+In the 2nd example the name of the course or [Parent](#Parent)
+The final example is using the name (Captivate Properties Name for button)
+
+## Context Activity
+
+Context Acivities are very important to streamline LRS reporting/output.  When you include a [Parent id](#Parent-id) http://superwrapper/parent/example in an acrivites context all [activies](#Activity) with that id can be referrred too by using related properties.
+
+Every statement except accessed and comleted will have a parent context, and in some case 2 parents.
+
+A single parent example:
+   Brian 'entered' slide first slide
+
+In this example the context activities would contain the parent that was is the course name
+
+A 2 parent example:
+
+   Brian 'answered' superWrapper is cool (True/False)
+
+In this example the context activies would include 2 parents.  The 1st parent would be the the course name [Parent](#Parent) and the 2nd parent would be the name of the [quiz](#Quizzing)
+
+
+
+## Parent 
 Parent is the main course identifier and can be broken into 3 main parts.  It will be the activity for the access and completed verb, because we are reffering to the actual course(the parent) with these 2 verbs.  For all other verbs these parent properies will be use is the parent in xAPI context activities as the parent.
 
-### Parent Id(pid)
-
+### Parent Id
 Parent ID is the main course ID - superWrapper creates this using the prefixId(#Prefix-Id) annd joining it with the [Parent name](#Parent-Name).  
 
 ### Parent Name
-
 The Parent Name is taken first from params.parentName if set, 2nd from it will pull it from Capivate using the cpInfoProjectName variable.  This is set in Captivate Prefrences>Project>Information -Project Name
 
 ### Parent Description
 The Parent Descripion is taken first from params.parentDescription if set, 2nd from it will pull it from Capivate using the cpInfoDescription variable.   This is set in Captivate Prefrences>Project>Information -Description
 
+### Quizzing
 
+## Quiz name
+The Quiz Name is taken first from params.quizName if set.  If this value is null it will create quiz take the paren name and append the word Quiz on the end.   
+
+## Quiz Id
+The Quiz ID is taken first from params.quizId if set.  If this value is null it will create a quiz id based on the parent name and append the /quiz/ on the end prior to parent on IRI.
+
+## Quiz Description
+The Quiz Description is taken first from params.quizDescripion if set.  If this value is null it will creted a description that is stated or finished Assesment and the [Quiz Name](#Quiz-name)
+
+
+## Quiz Question Name
+The quiz question name is the question itself.
+
+## Quiz Question ID
+The quiz ID with the Adobe Captivate Ineractioon ID taken from quiz properites avaialble from the quiz sumbit event.data.cpData.interactionID using the event listener 
+
+''' javascript window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER')'''
 
 ## Preface:
 
