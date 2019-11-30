@@ -1,5 +1,6 @@
 [Overview](#Overview)</br>
-         [Navigation](#Navigation)</br>
+         [Navigation Events](#Navigation-events)</br>
+         [Event Video Events](#Event-vdeo-events)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
 
 [Updates](#Update-Log)
@@ -18,11 +19,11 @@ How does it work ? - Captivate has built in listeners and variables (API's) that
 This is a list of the activities/verbs that the wrapper will send, broken into 3 sections.
 Naviagation, Event Video, and Quizzing.
 
-## Navigation
+## Navigation events
 
-|Verb       | When it triggers/sends to LRS | Additional Context  |
+|Verb       | When it triggers/sends to LRS | Additional Notes    |
 | --------- |:-----------------------------:| -------------------:|
-| access    |When course is launched        |[Parent ID](#Parent-Id)|
+| access    |When course is launched        |[pid](#Parent-Id)    |
 | enter     |When user enters a slide       |Slide info,Proj info |    
 | return    |When returning to a menu slide |                     |
 | view      |When leaving a slide           |Duration             |
@@ -31,18 +32,36 @@ Naviagation, Event Video, and Quizzing.
 | focus     |When fouus on window happens   |                     |
 | unfocus   |When focus on window is lost   |                     |
 
-### Parent Id
 
- access:[true,'accessed','http://activitystrea.ms/schema/1.0/access'],
-                enter:[true,'entered slide',`${customVerbPrefix}enteredSlide`],
-                return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
-                view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
-                complete:[true,'completed course','http://activitystrea.ms/schema/1.0/complete'],
-                open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
-                pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],pressClickBox:[true, 'clicked box'],//same verb as above
-                focus:[true,'focused','http://id.tincanapi.com/verb/focused'],
-                unfocus:[true,'unfocused','http://id.tincanapi.com/verb/unfocused'],
-                experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
+## Event Video events
+
+|Verb       | When it triggers/sends to LRS | Additional Notes    |
+| --------- |:-----------------------------:| -------------------:|
+| play      |When video is played           |[pid](#Parent-Id)    |
+| pause     |When video is paused           |Slide info,Proj info |    
+| scrub     |When video is scrubbed         |                     |
+| watch     |When end of video is reached   |Duration             |
+| mute      |When video is muted            |                     |
+| unmute    |When video is unmutued         |                     |
+| adjust Vol|When volume is adjusted        |                     |
+
+
+
+### Parent 
+
+Parent is the main course identifier and can be broken into 3 main parts.  It will be the activity for the access and completed verb, because we are reffering to the actual course(the parent) with these 2 verbs.  For all other verbs these parent properies will be use is the parent in xAPI context activities as the parent.
+
+## Parent Id(pid)
+
+Parent ID is the main course ID - superWrapper creates this using the prefixId(#Prefix-Id) annd joining it with the [Parent name](#Parent-Name).  
+
+## Parent Name
+
+The Parent Name is taken first from params.parentName if set, 2nd from it will pull it from Capivate using the cpInfoProjectName variable.  
+
+## Parent Description
+The Parent Descripion is taken first from params.parentDescription if set, 2nd from it will pull it from Capivate using the cpInfoDescription variable.  
+
 
 
 ## Preface:

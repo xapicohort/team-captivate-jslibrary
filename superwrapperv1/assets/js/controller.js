@@ -68,6 +68,7 @@ const params = {
     quizId:`http://quizid/test`,//uses baseID-ActivityName
     remove_play_button_on_mobile:true,
     parentName:'superWrapper Cohort Demo',
+    parentDescription:null,
     baseId:'http://www.brianfloyd.me/superwrapper',//uses base URL and path by default but can be defined to custom URI
     returnToLastSlideVisited:true,//TODO:write query to check last slide visited
     version:'1.1.2'
@@ -116,8 +117,8 @@ constructor(store){
         })();
         this.parentName = params.parentName || sw.var('cpInfoProjectName');
         this.parentId = `${this.idPrefix}parent/${sw.insert_(this.parentName)}`;
-        this.parentDescription =sw.var('cpInfoDescription');
-        this.activityDescription='null';
+        this.parentDescription = params.parentDescription ||sw.var('cpInfoDescription');
+        this.activityDescription=null;
         this.slideEnterTime = null;
         this.menuFlag = false;
         this.pauseTime=null;
