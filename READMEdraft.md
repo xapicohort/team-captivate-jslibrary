@@ -153,7 +153,6 @@ The quiz ID with the Adobe Captivate Ineractioon ID taken from quiz properites a
 Each quiz question type has its own specific context definiton designed for xAPI to maximize LRS reporting feaatures.
 
 ### Quiz Results
-
 Here is a standard question Object.result from xapi
 
 ```javascript   
@@ -170,13 +169,34 @@ Here is a standard question Object.result from xapi
     "response": "Scorm 1.2,Scorm 2004,xAPI"
   }} 
   ```
-
   The scaled score is the percentage contributed to overall quiz final score
   The max score is the number of points assigned in captivate to questions
   The raw score is the raw number of points the user achieved for the questioin
   Success is whether the question was answered correctly
   Duration was the amount of time th user took to answer he question
-  response was he users response to the question (this example  was  arrange in order)
+  Response was he users response to the question (this example  was  arrange in order)
+
+When a quiz is finished the finished verb statement Oject.result will look like this
+
+```javascript
+
+ {"result": {
+    "score": {
+      "scaled": 0.78,
+      "raw": 35,
+      "min": 0,
+      "max": 45
+    },
+    "success": false,
+    "completion": true,
+    "duration": "PT0H0M51S"
+  }}
+  ```
+  In this case:
+  Scaled is total score for the project as a %
+  raw/max is total achieved point  vs total possiible points
+  Sucess is set based on API 'cpQuizInfoPassFail' so can be variable based on captivae settings
+  Duration is now for the enire duration of quiz 
 
 ## Preface:
 
