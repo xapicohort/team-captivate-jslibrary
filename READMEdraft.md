@@ -2,23 +2,27 @@
 
 
 [Overview](#Overview)</br>
-   [Actor](#Actor)</br>
-   #### Verbs(#Verbs)
+[Setup](#Basic-set-up-and-instructions)</br>
+[Updates](#Update-Log)
+
+  
+   #### [Verbs](#Verbs)
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Navigation Events](#Navigation-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Event Video Events](#Event-video-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
-   #### xAPI Properies
+   #### xAPI values and where superWrapper gets them
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Actor](#Actor)</br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent](#Parent-id)</br>
-[Setup](#Basic-set-up-and-instructions)</br>
-[Updates](#Update-Log)
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Activity](#Activty)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent](#Parent)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quizzing](#Quizzing)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Video](#Event-video)</br>
 
 
 
 # Overview
 This wrapper was designed to be a companion to an Adobe Captivate HTML publish package.  It is designed to work from a LMS where SCORM reporting is enabled, or any course even if SCORM is not enabled.  It will not interupt or change SCORM reporting but will also report xAPI to an LRS.
 
-It handles connection to an LRS and sends xAPI statements from the Captivate publish package with very little needed from the user to make it work.  Follow the [Setup](#Basic-set-up-and-instructions)instructions below, and the wrapper does the rest.
+It handles connection to an LRS and sends xAPI statements from the Captivate publish package with very little needed from the user to make it work.  Follow the [Setup](#Basic-set-up-and-instructions) instructions below, and the wrapper does the rest.
 
 How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magically (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
 
@@ -197,6 +201,58 @@ When a quiz is finished the finished verb statement Oject.result will look like 
   raw/max is total achieved point  vs total possiible points
   Sucess is set based on API 'cpQuizInfoPassFail' so can be variable based on captivae settings
   Duration is now for the enire duration of quiz 
+
+## Event video
+Event video is video that is embedded within a captivate slide
+
+### Video Name
+Video name will be the value assigned to the video object in captivate properties
+
+### Video Id
+Is created like this http://superwrapper/[videoname]/video
+
+### Video Description
+Populates the slide name the video belongs to along with the video name
+
+### Video Parents
+Vidoes will will display 2 parents.  The first parents in the parent course, the 2nd parent is the slide the video belongs too
+
+### Video Extensions
+Some of the event verbs have special reporting extensions in the xapi object.context property to give activity details.
+
+#### Duration
+All video verbs will contain http://id.tincanapi.com/extension/duration - this is the duration of the video
+
+```javascript
+  "http://id.tincanapi.com/extension/duration": {
+        "name": {
+          "en-US": "Video length duration"
+        },
+        "description": {
+          "en-US": "PT42S"
+        }
+```
+#### Pause - ending point
+Paused statements will contain "http://id.tincanapi.com/extension/ending-point" - ths is the point at which the event video was paused
+```javascript
+ { "http://id.tincanapi.com/extension/ending-point": "PT5S"}
+
+```
+#### Scrub
+
+Scurbbed statements will contain  "http://id.tincanapi.com/extension/ending-point": "PT25S" along with  "http://id.tincanapi.com/extension/starting-point": "PT1S" and also  "http://id.tincanapi.com/extension/scrubDuration"
+
+```javascript
+    "http://id.tincanapi.com/extension/scrubDuration": {
+        "name": {
+          "en-US": "scrubbed forward 24",
+          "description": {
+            "en-US": "PT25S"
+          }
+        }
+```
+
+
 
 ## Preface:
 
