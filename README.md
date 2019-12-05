@@ -28,7 +28,7 @@ This wrapper was designed to be a companion to an Adobe Captivate HTML publish p
 
 It handles connection to an LRS and sends xAPI statements from the Captivate publish package with very little needed from the user to make it work.  Follow the [Setup](#Basic-set-up-and-instructions) instructions below, and the wrapper does the rest.
 
-How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magically (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
+How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magic (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
 
 Here are are all of the setup configurations for each xAPI Property and a description of when they fire of to the LRS.
 
