@@ -29,13 +29,13 @@ It handles connection to an LRS and sends xAPI statements from the Captivate pub
 
 How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magically (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
 
-Here are are all of the setup configurations for each xAPI Property and a description of when they fire
+Here are are all of the setup configurations for each xAPI Property and a description of when they fire of to the LRS.
 
 ## Actor
 Actor is who is taking the course.  This can populate one of 3 ways with superWrapper
 
 ### Actor Scorm
-If the course is published as a Scorm course and run from and LMS superWrapper will look for the SCORM object and get the actor from scorm.LearnerId and scorm.Name - If scorm.learnerID is an email address this will become actor.mbox, if it is not a valid email actor.mbox will populating the actor.name with spaces removed and joining it with @superwrapper.com
+If the course is published as a Scorm course and run from a LMS, superWrapper will look for the SCORM object and get the actor from scorm.LearnerId and scorm.Name - If scorm.learnerID is an email address this will become actor.mbox, if it is not a valid email actor.mbox will populate the actor.name with spaces removed and joining it with @superwrapper.com
 
 actor.name will populate from scorm.Name
 
@@ -45,10 +45,11 @@ If no Scorm value is present the next place superWrapper will go is the url para
 actor.mbox will populate from this passed parameter
 actor.name will populate from this passed parameter split at the @ symbol (first half of email)
 
-example: http://superwraper/exampleonlynotaworkinglink?mailto=bfloyd@brianfloyd.me
+example: http://superwraper/exampleonlynotaworkinglink?mailto=briand@brianfloyd.me
 
 ### Actor via superWrapper Override
-If the 1st 2 methods do not yield a actor then superWrapper will presnet login screen will hide the captivate object and display a prompt to enter an email.  The captions in this on this login screen and the ability to skip is avaialbe in params.login parameters.
+If the 1st 2 methods do not yield a actor then superWrapper will presnet login screen will hide the captivate object and display a prompt to enter an email.  The captions on this login screen are editable in params.login
+
 
 ## Verbs
 Below are the different events that superWrapper on and their respective verb
@@ -71,10 +72,10 @@ Below are the different events that superWrapper on and their respective verb
 
 |Verb       | When it triggers/sends to LRS | Additional Notes    |
 | --------- |:-----------------------------:| -------------------:|
-| play      |When video is played           |[pid](#Parent-Id)    |
-| pause     |When video is paused           |Slide info,Proj info |    
+| play      |When video is played           |   |
+| pause     |When video is paused           | |    
 | scrub     |When video is scrubbed         |                     |
-| watch     |When end of video is reached   |Duration             |
+| watch     |When end of video is reached   |           |
 | mute      |When video is muted            |                     |
 | unmute    |When video is unmutued         |                     |
 | adjust Vol|When volume is adjusted        |                     |
