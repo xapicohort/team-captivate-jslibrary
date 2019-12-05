@@ -46,7 +46,7 @@ If no Scorm value is present the next place superWrapper will go is the url para
 actor.mbox will populate from this passed parameter
 actor.name will populate from this passed parameter split at the @ symbol (first half of email)
 
-example: http://superwraper/exampleonlynotaworkinglink?mailto=briand@brianfloyd.me
+example: http://superwraper/exampleonlynotaworkinglink?mailto=brian@brianfloyd.me
 
 ### Actor via superWrapper Override
 If the 1st 2 methods do not yield a actor then superWrapper will presnet login screen will hide the captivate object and display a prompt to enter an email.  The captions on this login screen are editable in params.login
