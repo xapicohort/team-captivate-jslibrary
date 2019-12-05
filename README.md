@@ -59,7 +59,7 @@ Below are the different events that superWrapper on and their respective verb. E
 
 |Verb       | When it triggers/sends to LRS | Additional Notes    |
 | --------- |:-----------------------------:| -------------------:|
-| access    |When course is launched        |[pid](#Parent-Id)    |
+| access    |When course is launched        |    |
 | enter     |When user enters a slide       | |    
 | return    |When returning to a menu slide |                     |
 | view      |When leaving a slide           |           |
