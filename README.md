@@ -3,6 +3,7 @@
 
 [Overview](#Overview)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
+[YouTube - Step by Step Setup Walkthrough](https://www.youtube.com/watch?v=erEzaY9_LCE&feature=youtu.be)</br>
 [Updates](#Update-Log)</br>
 
    #### [Actor](#Actor)
