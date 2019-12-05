@@ -13,6 +13,7 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Event Video Events](#Event-video-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Button and Clickbox Event](#Button-and-Clickbox-Events)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Verb Customization](#Verb-Customization)</br>
    #### [Activity](#Activty)</br>
    #### xAPI values and where superWrapper gets them
   
@@ -52,7 +53,7 @@ If the 1st 2 methods do not yield a actor then superWrapper will presnet login s
 
 
 ## Verbs
-Below are the different events that superWrapper on and their respective verb
+Below are the different events that superWrapper on and their respective verb. Event as used below  is any time a statement is sent to the LRS.
 
 ## Navigation events
 
@@ -98,6 +99,48 @@ Below are the different events that superWrapper on and their respective verb
 By design this wrapper will not track buttons and clickboxes automatically.  This is becuase often buttons are used with navigation and this is already tracked with enter and viewed verbs.  If you would like a click box or button to report, add xapi_ as the prefix for the name of the button found in Captivate.  So if you had btn_1, you would simply change that to xapi_btn1 and now it will report.
 
 Button include 2 parents. The 1st parent would be the the course name Parent and the 2nd parent would is the name of slide becuase the buttons parent is the slide and the slides partent is the course.
+
+### Verb Customization
+
+All of the listed by verbs by default are turned on, many of them use the verb and id found at [The Registry](https://registry.tincanapi.com).  In other cases an appropriate verb was not registered so we created custom superwrapper verbs and id's.
+
+You can turn edit 3 properties for each verb whether is reports, the verb (how it will show in LRS verb display name), and finally verb id.  Verb Id must be valid IRI, superwrapper will resort to default if an unacceptable value it used.
+
+These can be changed by editing params.verbs
+
+Here is the block for navigtion verbs
+
+```javascript
+   verbs:
+                {
+                access:[true,'accessed','http://activitystrea.ms/schema/1.0/access'],
+                enter:[true,'entered slide',`${customVerbPrefix}enteredSlide`],
+                return:[true,'returned to','http://activitystrea.ms/schema/1.0/return'],
+                view:[true, 'viewed slide','http://id.tincanapi.com/verb/viewed'],
+                complete:[true,'completed course','http://activitystrea.ms/schema/1.0/complete'],
+                open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
+                pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
+                pressClickBox:[true, 'clicked box'],//same verb as above
+                focus:[false,'focused','http://id.tincanapi.com/verb/focused'],
+                unfocus:[false,'unfocused','http://id.tincanapi.com/verb/unfocused'],
+                experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced']
+                }
+```
+Lets say you wanted to use launched in place of accessed.  The access property would just change to look like this:
+
+```javascript
+        access:[true,'launched','http://adlnet.gov/expapi/verbs/launched']
+```
+
+Now every time the course is accessed it will instead use the launch verb.
+
+Any reporting property can be toggled off by changing the 1st true to a false value        
+
+```javascript
+           enter:[false,'entered slide',`${customVerbPrefix}enteredSlide`]
+```
+
+Enter is reported when a user enters the slide, and viewed appears after user leaves the slide with duration of viewership.  If you didn't want both the above example would turn off the enter statement.
 
 ## Activity
 Activity is the name the description of the event that that verb is acting on.  So the activity could be the course, a slide, a video, a button, a quiz, etc.  
