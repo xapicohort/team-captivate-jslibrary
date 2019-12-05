@@ -1,8 +1,263 @@
-
-[Setup](#Basic-set-up-and-instructions)</br>
-[Updates](#Update-Log)
-
 # Our Captivate JS library team repository
+
+
+[Overview](#Overview)</br>
+[Setup](#Basic-set-up-and-instructions)</br>
+[Updates](#Update-Log)</br>
+
+   #### [Actor](#Actor)
+   #### [Verbs](#Verbs)
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Navigation Events](#Navigation-events)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Event Video Events](#Event-video-events)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Button and Clickbox Event](#Button-and-Clickbox-Events)</br>
+   #### [Activity](#Activty)</br>
+   #### xAPI values and where superWrapper gets them
+  
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent](#Parent)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quizzing](#Quizzing)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Video](#Event-video)</br>
+
+
+
+# Overview
+This wrapper was designed to be a companion to an Adobe Captivate HTML publish package.  It is designed to work from a LMS where SCORM reporting is enabled, or any course even if SCORM is not enabled.  It will not interupt or change SCORM reporting but will also report xAPI to an LRS.
+
+It handles connection to an LRS and sends xAPI statements from the Captivate publish package with very little needed from the user to make it work.  Follow the [Setup](#Basic-set-up-and-instructions) instructions below, and the wrapper does the rest.
+
+How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magically (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
+
+Here are are all of the setup configurations for each xAPI Property and a description of when they fire
+
+## Actor
+Actor is who is taking the course.  This can populate one of 3 ways with superWrapper
+
+### Actor Scorm
+If the course is published as a Scorm course and run from and LMS superWrapper will look for the SCORM object and get the actor from scorm.LearnerId and scorm.Name - If scorm.learnerID is an email address this will become actor.mbox, if it is not a valid email actor.mbox will populating the actor.name with spaces removed and joining it with @superwrapper.com
+
+actor.name will populate from scorm.Name
+
+### Actor via mbox or mailto parameter
+If no Scorm value is present the next place superWrapper will go is the url parameter.  An actor can be passed in through a url using ?mailto= or ?mbox= parameters.
+
+actor.mbox will populate from this passed parameter
+actor.name will populate from this passed parameter split at the @ symbol (first half of email)
+
+example: http://superwraper/exampleonlynotaworkinglink?mailto=bfloyd@brianfloyd.me
+
+### Actor via superWrapper Override
+If the 1st 2 methods do not yield a actor then superWrapper will presnet login screen will hide the captivate object and display a prompt to enter an email.  The captions in this on this login screen and the ability to skip is avaialbe in params.login parameters.
+
+## Verbs
+Below are the different events that superWrapper on and their respective verb
+
+## Navigation events
+
+|Verb       | When it triggers/sends to LRS | Additional Notes    |
+| --------- |:-----------------------------:| -------------------:|
+| access    |When course is launched        |[pid](#Parent-Id)    |
+| enter     |When user enters a slide       |Slide info,Proj info |    
+| return    |When returning to a menu slide |                     |
+| view      |When leaving a slide           |Duration             |
+| complete  |When last slide is entered     |                     |
+| pressed   |Tap/Click of button or clickbox|                     |
+| focus     |When fouus on window happens   |                     |
+| unfocus   |When focus on window is lost   |                     |
+
+
+## Event video events
+
+|Verb       | When it triggers/sends to LRS | Additional Notes    |
+| --------- |:-----------------------------:| -------------------:|
+| play      |When video is played           |[pid](#Parent-Id)    |
+| pause     |When video is paused           |Slide info,Proj info |    
+| scrub     |When video is scrubbed         |                     |
+| watch     |When end of video is reached   |Duration             |
+| mute      |When video is muted            |                     |
+| unmute    |When video is unmutued         |                     |
+| adjust Vol|When volume is adjusted        |                     |
+
+## Quiz events
+
+|Verb       | When it triggers/sends to LRS | Additional Notes    |
+| --------- |:-----------------------------:| -------------------:|
+| play      |When video is played           |[pid](#Parent-Id)    |
+| pause     |When video is paused           |Slide info,Proj info |    
+| scrub     |When video is scrubbed         |                     |
+| watch     |When end of video is reached   |Duration             |
+| mute      |When video is muted            |                     |
+| unmute    |When video is unmutued         |                     |
+| adjust Vol|When volume is adjusted        |                     |
+
+
+### Button and Clickbox Event
+
+By design this wrapper will not track buttons and clickboxes automatically.  This is becuase often buttons are used with navigation and this is already tracked with enter and viewed verbs.  If you would like a click box or button to report, add xapi_ as the prefix for the name of the button found in Captivate.  So if you had btn_1, you would simply change that to xapi_btn1 and now it will report.
+
+Button include 2 parents. The 1st parent would be the the course name Parent and the 2nd parent would is the name of slide becuase the buttons parent is the slide and the slides partent is the course.
+
+## Activity
+Activity is the name the description of the event that that verb is acting on.  So the activity could be the course, a slide, a video, a button, a quiz, etc.  
+
+A few examples:
+   Brian 'entered' slide first slide
+   Brian 'accessed course' Captivate Demo
+   Brian 'pressed' show answer button
+
+In  the first example the name of slide (Captivate Properties Name) is used as the activity
+In the 2nd example the name of the course or [Parent](#Parent)
+The final example is using the name (Captivate Properties Name for button)
+
+## Context Activity
+
+Context Acivities are very important to streamline LRS reporting/output.  When you include a [Parent id](#Parent-id) http://superwrapper/parent/example in an acrivites context all [activies](#Activity) with that id can be referrred too by using related properties.
+
+Every statement except accessed and comleted will have a parent context, and in some case 2 parents.
+
+A single parent example:
+   Brian 'entered' slide first slide
+
+In this example the context activities would contain the parent that was is the course name
+
+A 2 parent example:
+
+   Brian 'answered' superWrapper is cool (True/False)
+
+In this example the context activies would include 2 parents.  The 1st parent would be the the course name [Parent](#Parent) and the 2nd parent would be the name of the [quiz](#Quizzing)
+
+
+
+## Parent 
+Parent is the main course identifier and can be broken into 3 main parts.  It will be the activity for the access and completed verb, because we are reffering to the actual course(the parent) with these 2 verbs.  For all other verbs these parent properies will be use is the parent in xAPI context activities as the parent.
+
+### Parent Id
+Parent ID is the main course ID - superWrapper creates this using the prefixId(#Prefix-Id) annd joining it with the [Parent name](#Parent-Name).  
+
+### Parent Name
+The Parent Name is taken first from params.parentName if set, 2nd from it will pull it from Capivate using the cpInfoProjectName variable.  This is set in Captivate Prefrences>Project>Information -Project Name
+
+### Parent Description
+The Parent Descripion is taken first from params.parentDescription if set, 2nd from it will pull it from Capivate using the cpInfoDescription variable.   This is set in Captivate Prefrences>Project>Information -Description
+
+## Quizzing
+
+### Quiz name
+The Quiz Name is taken first from params.quizName if set.  If this value is null it will create quiz take the paren name and append the word Quiz on the end.   
+
+### Quiz Id
+The Quiz ID is taken first from params.quizId if set.  If this value is null it will create a quiz id based on the parent name and append the /quiz/ on the end prior to parent on IRI.
+
+### Quiz Description
+The Quiz Description is taken first from params.quizDescripion if set.  If this value is null it will creted a description that is stated or finished Assesment and the [Quiz Name](#Quiz-name)
+
+
+### Quiz Question Name
+The quiz question name is the question itself.
+
+### Quiz Question ID
+The quiz ID with the Adobe Captivate Ineractioon ID taken from quiz properites avaialble from the quiz sumbit event.data.cpData.interactionID using the event listener 
+
+``` javascript window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER')```
+
+### cmi5 xAPI
+Each quiz question type has its own specific context definiton designed for xAPI to maximize LRS reporting feaatures.
+
+### Quiz Results
+Here is a standard question Object.result from xapi
+
+```javascript   
+ {"result": {
+    "score": {
+      "scaled": 0.22,
+      "raw": 10,
+      "min": 0,
+      "max": 10
+    },
+    "success": true,
+    "completion": true,
+    "duration": "PT0H0M26S",
+    "response": "Scorm 1.2,Scorm 2004,xAPI"
+  }} 
+  ```
+  The scaled score is the percentage contributed to overall quiz final score
+  The max score is the number of points assigned in captivate to questions
+  The raw score is the raw number of points the user achieved for the questioin
+  Success is whether the question was answered correctly
+  Duration was the amount of time th user took to answer he question
+  Response was he users response to the question (this example  was  arrange in order)
+
+When a quiz is finished the finished verb statement Oject.result will look like this
+
+```javascript
+
+ {"result": {
+    "score": {
+      "scaled": 0.78,
+      "raw": 35,
+      "min": 0,
+      "max": 45
+    },
+    "success": false,
+    "completion": true,
+    "duration": "PT0H0M51S"
+  }}
+  ```
+  In this case:
+  Scaled is total score for the project as a %
+  raw/max is total achieved point  vs total possiible points
+  Sucess is set based on API 'cpQuizInfoPassFail' so can be variable based on captivae settings
+  Duration is now for the enire duration of quiz 
+
+## Event video
+Event video is video that is embedded within a captivate slide
+
+### Video Name
+Video name will be the value assigned to the video object in captivate properties
+
+### Video Id
+Is created like this http://superwrapper/[videoname]/video
+
+### Video Description
+Populates the slide name the video belongs to along with the video name
+
+### Video Parents
+Vidoes will will display 2 parents.  The first parents in the parent course, the 2nd parent is the slide the video belongs too
+
+### Video Extensions
+Some of the event verbs have special reporting extensions in the xapi object.context property to give activity details.
+
+#### Duration
+All video verbs will contain http://id.tincanapi.com/extension/duration - this is the duration of the video
+
+```javascript
+  "http://id.tincanapi.com/extension/duration": {
+        "name": {
+          "en-US": "Video length duration"
+        },
+        "description": {
+          "en-US": "PT42S"
+        }
+```
+#### Pause - ending point
+Paused statements will contain "http://id.tincanapi.com/extension/ending-point" - ths is the point at which the event video was paused
+```javascript
+ { "http://id.tincanapi.com/extension/ending-point": "PT5S"}
+
+```
+#### Scrub
+
+Scurbbed statements will contain  "http://id.tincanapi.com/extension/ending-point": "PT25S" along with  "http://id.tincanapi.com/extension/starting-point": "PT1S" and also  "http://id.tincanapi.com/extension/scrubDuration"
+
+```javascript
+    "http://id.tincanapi.com/extension/scrubDuration": {
+        "name": {
+          "en-US": "scrubbed forward 24",
+          "description": {
+            "en-US": "PT25S"
+          }
+        }
+```
+
 
 
 ## Preface:
