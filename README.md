@@ -4,7 +4,7 @@
 [Overview](#Overview)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
 [YouTube - Step by Step Setup Walkthrough](https://www.youtube.com/watch?v=erEzaY9_LCE&feature=youtu.be)</br>
-[YouTube - Torrance Learning Cohort superWrapper Demo](https://youtu.be/A4bLSshgKqI?t=3460)
+[YouTube - Torrance Learning Cohort superWrapper Demo](https://youtu.be/A4bLSshgKqI?t=3460)</br>
 [Updates](#Update-Log)</br>
 
    #### [Actor](#Actor)
