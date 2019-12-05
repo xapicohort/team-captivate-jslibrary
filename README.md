@@ -59,9 +59,9 @@ Below are the different events that superWrapper on and their respective verb
 |Verb       | When it triggers/sends to LRS | Additional Notes    |
 | --------- |:-----------------------------:| -------------------:|
 | access    |When course is launched        |[pid](#Parent-Id)    |
-| enter     |When user enters a slide       |Slide info,Proj info |    
+| enter     |When user enters a slide       | |    
 | return    |When returning to a menu slide |                     |
-| view      |When leaving a slide           |Duration             |
+| view      |When leaving a slide           |           |
 | complete  |When last slide is entered     |                     |
 | pressed   |Tap/Click of button or clickbox|                     |
 | focus     |When fouus on window happens   |                     |
@@ -84,10 +84,10 @@ Below are the different events that superWrapper on and their respective verb
 
 |Verb       | When it triggers/sends to LRS | Additional Notes    |
 | --------- |:-----------------------------:| -------------------:|
-| play      |When video is played           |[pid](#Parent-Id)    |
-| pause     |When video is paused           |Slide info,Proj info |    
+| play      |When video is played           |   |
+| pause     |When video is paused           ||    
 | scrub     |When video is scrubbed         |                     |
-| watch     |When end of video is reached   |Duration             |
+| watch     |When end of video is reached   |            |
 | mute      |When video is muted            |                     |
 | unmute    |When video is unmutued         |                     |
 | adjust Vol|When volume is adjusted        |                     |
