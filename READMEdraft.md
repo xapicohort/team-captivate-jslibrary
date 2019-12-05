@@ -3,16 +3,18 @@
 
 [Overview](#Overview)</br>
 [Setup](#Basic-set-up-and-instructions)</br>
-[Updates](#Update-Log)
+[Updates](#Update-Log)</br>
 
-  
+   #### [Actor](#Actor)
    #### [Verbs](#Verbs)
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Navigation Events](#Navigation-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Event Video Events](#Event-video-events)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quiz Events](#Quiz-events)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Button and Clickbox Event](#Button-and-Clickbox-Events)</br>
+   #### [Activity](#Activty)</br>
    #### xAPI values and where superWrapper gets them
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Actor](#Actor)</br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Activity](#Activty)</br>
+  
+
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent](#Parent)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quizzing](#Quizzing)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Video](#Event-video)</br>
@@ -89,6 +91,9 @@ Below are the different events that superWrapper on and their respective verb
 | adjust Vol|When volume is adjusted        |                     |
 
 
+### Button and Clickbox Event
+
+By design this wrapper will not track buttons and clickboxes automatically.  This is becuase often buttons are used with navigation and this is already tracked with enter and viewed verbs.  If you would like a click box or button to report, add xapi_ as the prefix for the name of the button found in Captivate.  So if you had btn_1, you would simply change that to xapi_btn1 and now it will report.
 
 ## Activity
 Activity is the name the description of the event that that verb is acting on.  So the activity could be the course, a slide, a video, a button, a quiz, etc.  
