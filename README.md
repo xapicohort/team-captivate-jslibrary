@@ -23,8 +23,7 @@
 
    #### Adobe resources that explain the API's used throughout
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Common js interface for CP](https://helpx.adobe.com/captivate/using/common-js-interface.html) </br>
-   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Common js interface for CP](https://helpx.adobe.com/captivate/using/common-js-interface.html) 
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Adobe Captivate Variables](https://helpx.adobe.com/captivate/using/captivate-variables-list.html)</br>
 
 
