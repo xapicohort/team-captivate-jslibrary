@@ -21,6 +21,12 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quizzing](#Quizzing)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Video](#Event-video)</br>
 
+   #### Adobe resources that explain the API's used throughout
+   
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Learn about the common js interface for CP]    	(https://helpx.adobe.com/captivate/using/common-js-interface.html)</br>
+   
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Adobe Captivate Variables](https://helpx.adobe.com/captivate/using/captivate-variables-list.html)</br>
+
 
 
 # Overview
