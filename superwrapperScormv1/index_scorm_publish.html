@@ -8,6 +8,25 @@
 <style type="text/css">#initialLoading{background:url(assets/htmlimages/loader.gif) no-repeat center center;background-color:#ffffff;position:absolute;margin:auto;top:0;left:0;right:0;bottom:0;z-index:10010;}</style>
 
 <script>
+	/********************
+**  SuperWrapper  **
+*******************/
+//insert this code to load all the appropriate packages
+var controllerVersion, tincan;
+/*SuperWrapper is not compantible with Microsoft IE, this 
+  causes it to display warning message and not load*/
+if(navigator.appName  !== "Microsoft Internet Explorer"){
+/*Load the controller file and tincan library*/	
+	controllerVersion= "assets/js/controller.js";
+	tincan = "assets/js/tincan.js"
+}else{
+	controllerVersion ="assets/js/controllerNoIE.js";
+
+}
+/*end of inserted code
+*********************
+**  SuperWrapper  **
+********************/
 
 var deviceReady = false;
 var initCalled = false ;
@@ -96,6 +115,14 @@ function initializeCP()
                         });
                      
 						var lJSFiles = [  'assets/js/jquery-1.11.3.min.js','scormdriver.js','assets/js/CPM.js' ];
+						/*******************
+						**  SuperWrapper  **
+						*******************/
+						lJSFiles.push(tincan,controllerVersion)
+						/*this is appending the variables (files to load) we set up top
+						*******************
+						**  SuperWrapper  **
+						********************/
 				
 
 
