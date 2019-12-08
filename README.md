@@ -21,6 +21,11 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quizzing](#Quizzing)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Video](#Event-video)</br>
 
+   #### Adobe resources that explain the API's used throughout
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Common js interface for CP](https://helpx.adobe.com/captivate/using/common-js-interface.html) </br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Adobe Captivate Variables](https://helpx.adobe.com/captivate/using/captivate-variables-list.html)</br>
+
 
 
 # Overview
@@ -28,7 +33,7 @@ This wrapper was designed to be a companion to an Adobe Captivate HTML publish p
 
 It handles connection to an LRS and sends xAPI statements from the Captivate publish package with very little needed from the user to make it work.  Follow the [Setup](#Basic-set-up-and-instructions) instructions below, and the wrapper does the rest.
 
-How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magically (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
+How does it work ? - Captivate has built in listeners and variables (API's) that allow outside software to interact with a Captivate publish package while a learner is using it.  We have levereaged those API's so you the designer pretty much design as you always would in Captivate, the user consumes the course as they always would but magic (or 1500 lines of code) will make it report robust xAPI statements to the LRS of your choosing.
 
 Here are are all of the setup configurations for each xAPI Property and a description of when they fire of to the LRS.
 
@@ -46,7 +51,7 @@ If no Scorm value is present the next place superWrapper will go is the url para
 actor.mbox will populate from this passed parameter
 actor.name will populate from this passed parameter split at the @ symbol (first half of email)
 
-example: http://superwraper/exampleonlynotaworkinglink?mailto=briand@brianfloyd.me
+example: http://superwraper/exampleonlynotaworkinglink?mailto=brian@brianfloyd.me
 
 ### Actor via superWrapper Override
 If the 1st 2 methods do not yield a actor then superWrapper will presnet login screen will hide the captivate object and display a prompt to enter an email.  The captions on this login screen are editable in params.login
