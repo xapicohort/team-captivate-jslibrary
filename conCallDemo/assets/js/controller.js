@@ -71,7 +71,7 @@ const params = {
     quizId:null,//uses baseID-ActivityName/quiz/parent/parentName when set to  null
     quizDescription:null, //combines verb and assessment and quizname when set to null
     remove_play_button_on_mobile:true,
-    parentName:'superWrapper Cohort Demo',
+    parentName:null,
     parentDescription:null,
     baseId:'http://www.brianfloyd.me/superwrapper',//uses base URL and path by default but can be defined to custom URI
     returnToLastSlideVisited:true,//TODO:write query to check last slide visited
@@ -826,9 +826,6 @@ class SuperWrapper{
     };
     next(){
         window.cpAPIInterface.next();
-    };
-    play(){
-        cp.movie.play();
     };
     var(value){
        return this.capGetVarValue(value)

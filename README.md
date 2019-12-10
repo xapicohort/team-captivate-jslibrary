@@ -26,6 +26,9 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Common js interface for CP](https://helpx.adobe.com/captivate/using/common-js-interface.html) </br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Adobe Captivate Variables](https://helpx.adobe.com/captivate/using/captivate-variables-list.html)</br>
 
+  #### Captivate Resources
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[The superWrapper (sw) object](#The-superWrapper-(sw)-object)</br>
+
 
 
 # Overview
@@ -309,6 +312,23 @@ Scurbbed statements will contain  "http://id.tincanapi.com/extension/ending-poin
         }
 ```
 
+## The superWrapper (sw) object
+
+While creating this wrapper I found myself wanting to be able to interact quickly using the console and not having to type out long Catptivate API's to access.
+
+Here is a summary of those commands (these can be excecuted at anytime from the console) or from captivate javascript console when wrapper in insalled
+
+<span style="color:darkgreen">sw.jump<span>(slideIndex) - Jump too slideIndex (slide 1 is 0 index)<br>
+<span style="color:darkgreen">sw.next<span>()  - Advance to next slide<br>
+<span style="color:darkgreen">sw.var<span>([captivate variable]) - example sw.var('cpInfoCurrentSlide') will return current slide index<br>
+<span style="color:darkgreen">sw.reloadWebObject<span>()<br>
+<span style="color:darkgreen">sw.convertMilliSecondsToISO<span>([milliseconds])<br> Will convert milliseconds to ISO8006 time foramt standard<br>
+<span style="color:darkgreen">sw.uriCheck<span>([uri/iri]) ensures valid IRI will return IRI if valid or will return false if invalid <br>
+<span style="color:darkgreen">sw.uriCheck<span>([uri/iri])
+<span style="color:darkgreen">sw.updateTitle<span>([stringValue]) change the title of the URL parge to passed string value <br>
+<span style="color:darkgreen">sw.toggleGeture<span>([boolean -true/false])  Allows mobile gestures to be turned off by passing true or false on a slide by slide basis as needed<br>
+<span style="color:darkgreen">sw.onLine<span>() - returns true or false based on navigator.onLine property 
+
 
 
 ## Preface:
@@ -327,15 +347,9 @@ This repo lives on my personal server so any changes reflected here will be refl
 
 [YouTube - Step by Step Walkthrough](https://www.youtube.com/watch?v=erEzaY9_LCE&feature=youtu.be)
 
-### Step 1:  
-
-In your captivate project on the first slide in the on slide enter action add action 'execute javascript', in the 
-script window add:
-
-```init();```
                                                
                         
-### Step 2: 
+### Step 1: 
 
 In captivate you have to set up these user variables for your LRS:
 
@@ -353,7 +367,7 @@ Note:Included Captivate example file has these set up with our cohorts Watershed
 
 ```v_endpoint = [set to your LRS endpoint]```
                     
- ### Step 3: 
+ ### Step 2: 
  
  Publish the captivate ensuring the following:
  
@@ -362,7 +376,7 @@ Note:Included Captivate example file has these set up with our cohorts Watershed
                   -Scorm or no scorm is OK - but will change Step 6 slightly
                   -Do not zip files (uncheck publish setting)
                   
-### Step 4: 
+### Step 3: 
 
 Copy this repo (use clone button and downloaad zip for easiest access)
 
@@ -373,7 +387,7 @@ Copy this repo (use clone button and downloaad zip for easiest access)
                         
                 -In your captivate publish folder find the assets/js folder and paste the 3 files from above
                 
-### Step 5: 
+### Step 4: 
 
 We have to make changes to either index.html or index_scorm.html from captivate publish files
 
@@ -410,7 +424,7 @@ if(navigator.appName  !== "Microsoft Internet Explorer"){
 ********************/
 ```
               
-### Step 6 : 
+### Step 5 : 
 
         -Find a line similar to this in your index.hml (around line 120 but can vary) - 
         
@@ -431,7 +445,7 @@ if(navigator.appName  !== "Microsoft Internet Explorer"){
         ********************/
 ```           
              
-### Step 7:  
+### Step 6:  
 
 Your good to go!
             
@@ -471,6 +485,10 @@ Check out video available at [confernce call walk through](https://www.youtube.c
         -Fixed verb customization bug - Values where hard coded in not change to OOP
 
 Moving Forward I will continue to update this read.me with version update release info.  All feature requests, bugs and defects will now be reported using the 'issues' feature in this Git repo.  Please feel free to contribute any issues or feature requests you may have.
+
+12/9 1.1.3  Removed the need  to put init(); in the captivate (eliminating former step 1 which has been now edited out of this readme).  It is now called in the wrapper itself after a 1 millisecond delay to ensure all other files have loaded prior.
+
+Added paramater parmams.removeMobilePlayButton when set to true the defaul white screen with the play button on mobile is exected.
 
 
  
