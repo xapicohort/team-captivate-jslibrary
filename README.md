@@ -342,7 +342,7 @@ This repo lives on my personal server so any changes reflected here will be refl
 
 
 # Basic set-up and instructions:
-
+NOTE:SKIP STEP 1 INIT(); in walkthrouogh, new version no longer requires see 12/9 update at bottom for more deails.
 [YouTube - Step by Step Walkthrough](https://www.youtube.com/watch?v=erEzaY9_LCE&feature=youtu.be)
 
                                                
