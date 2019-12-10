@@ -27,7 +27,7 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Adobe Captivate Variables](https://helpx.adobe.com/captivate/using/captivate-variables-list.html)</br>
 
   #### Captivate Resources
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[The superWrapper (sw) object](#The-superWrapper-(sw)-object)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[The superWrapper (sw) object](#The-superWrapper-object)</br>
 
 
 
@@ -312,22 +312,21 @@ Scurbbed statements will contain  "http://id.tincanapi.com/extension/ending-poin
         }
 ```
 
-## The superWrapper (sw) object
+## The superWrapper object
 
 While creating this wrapper I found myself wanting to be able to interact quickly using the console and not having to type out long Catptivate API's to access.
 
 Here is a summary of those commands (these can be excecuted at anytime from the console) or from captivate javascript console when wrapper in insalled
 
-<span style="color:darkgreen">sw.jump<span>(slideIndex) - Jump too slideIndex (slide 1 is 0 index)<br>
-<span style="color:darkgreen">sw.next<span>()  - Advance to next slide<br>
-<span style="color:darkgreen">sw.var<span>([captivate variable]) - example sw.var('cpInfoCurrentSlide') will return current slide index<br>
-<span style="color:darkgreen">sw.reloadWebObject<span>()<br>
-<span style="color:darkgreen">sw.convertMilliSecondsToISO<span>([milliseconds])<br> Will convert milliseconds to ISO8006 time foramt standard<br>
-<span style="color:darkgreen">sw.uriCheck<span>([uri/iri]) ensures valid IRI will return IRI if valid or will return false if invalid <br>
-<span style="color:darkgreen">sw.uriCheck<span>([uri/iri])
-<span style="color:darkgreen">sw.updateTitle<span>([stringValue]) change the title of the URL parge to passed string value <br>
-<span style="color:darkgreen">sw.toggleGeture<span>([boolean -true/false])  Allows mobile gestures to be turned off by passing true or false on a slide by slide basis as needed<br>
-<span style="color:darkgreen">sw.onLine<span>() - returns true or false based on navigator.onLine property 
+<span style="color:#228B22">sw.jump<span>(slideIndex) - Jump too slideIndex (slide 1 is 0 index)<br>
+<span style="color:#228B22">sw.next<span>()  - Advance to next slide<br>
+<span style="color:#228B22">sw.var<span>([captivate variable]) - example sw.var('cpInfoCurrentSlide') will return current slide index<br>
+<span style="color:#228B22">sw.reloadWebObject<span>()<br>
+<span style="color:#228B22">sw.convertMilliSecondsToISO<span>([milliseconds])<br> Will convert milliseconds to ISO8006 time foramt standard<br>
+<span style="color:#228B22">sw.uriCheck<span>([uri/iri]) ensures valid IRI will return IRI if valid or will return false if invalid <br>
+<span style="color:#228B22">sw.updateTitle<span>([stringValue]) change the title of the URL parge to passed string value <br>
+<span style="color:#228B22">sw.toggleGeture<span>([boolean -true/false])  Allows mobile gestures to be turned off by passing true or false on a slide by slide basis as needed<br>
+<span style="color:#228B22">sw.onLine<span>() - returns true or false based on navigator.onLine property 
 
 
 
