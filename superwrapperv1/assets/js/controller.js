@@ -1,6 +1,7 @@
 //TODO: look for instances of toLowerCase();
 //MATCHING QUESTIONS MUST HAVE THE DEFAULT COLUMN 1 and COLUMN 2 headers must be, they can be changed, but not deleted or empty
 //NOTE:Quiz results are all working with the exception of matching
+
 const customVerbPrefix="http://id.superwrapper.com/verb/";
 const params = {
     "display_language":["en-US","en-CA","es","fr-CA"],//uses whichever value is in the first positiiion [0] in Array
@@ -13,8 +14,8 @@ const params = {
                 open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
                 pressClickBox:[true, 'clicked box'],//same verb as above
-                focus:[true,'focused','http://id.tincanapi.com/verb/focused'],
-                unfocus:[true,'unfocused','http://id.tincanapi.com/verb/unfocused'],
+                focus:[false,'focused','http://id.tincanapi.com/verb/focused'],
+                unfocus:[false,'unfocused','http://id.tincanapi.com/verb/unfocused'],
                 experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
             "quiz":
             {
@@ -32,7 +33,8 @@ const params = {
                 mute:[true,'muted', `${customVerbPrefix}muted`],
                 unmute:[true,'unmuted', `${customVerbPrefix}unmuted`],
                 adjustVolume:[true,'adjusted volume',`${customVerbPrefix}adjustVolume`],
-                watch: [true,'watched','http://activitystrea.ms/schema/1.0/watch']
+                watch: [true,'watched','http://activitystrea.ms/schema/1.0/watch'],
+                expand:[true,'exapanded to full screen', `${customVerbPrefix}expanded`]
             },
         },
     "consoleLog":{
@@ -49,8 +51,8 @@ const params = {
                 Use_custom_login_messages:true,
                 login_message:null,//this is the message displayed below email entry box
                 placeholder_text:null,//this is the placeholder for the email entry box 
-                Allow_user_to_skip_email:true,//when set to true skip email button will not show
-                skip_email_default_value:true,//if skip email buttton is turn on this is the email address it will return
+                Allow_user_to_skip_email:false,//when set to true skip email button will not show
+                skip_email_default_value:false,//if skip email buttton is turn on this is the email address it will return
                 invalid_email_placholder_Message:null//this is the plaeholder text that will be displayed if incorrect emal was displayed
     },
     "lrsSettings":{
@@ -61,17 +63,19 @@ const params = {
         sandbox_secret:null,
         production_secret:null,
         production_key:null,
-        production_endpoint:null    
+        production_endpoint:null
     
-    },   
-    quizName: null,//uses 
-    quizId:null,//uses baseID-ActivityName
+    },  
+    removePlayButton:true, 
+    quizName: null,//uses parent activity name with quiz appended to the end when null
+    quizId:null,//uses baseID-ActivityName/quiz/parent/parentName when set to  null
+    quizDescription:null, //combines verb and assessment and quizname when set to null
     remove_play_button_on_mobile:true,
     parentName:'superWrapper Cohort Demo',
     parentDescription:null,
     baseId:'http://www.brianfloyd.me/superwrapper',//uses base URL and path by default but can be defined to custom URI
     returnToLastSlideVisited:true,//TODO:write query to check last slide visited
-    version:'1.1.2'
+    version:'1.1.3'
 };
 
 if(params.consoleLog.version)console.log(`superWrapper ${params.version}`);
@@ -257,9 +261,9 @@ constructor(store){
         case 'start':
         case 'finish':
            
-            this.activityDescription=`${verb}ed Assessment ${quiz.quizName}`;
+            this.activityDescription=params.quizDescription ||`${verb}ed Assessment ${quiz.quizName}`;
             this.activity = params.quizName || quiz.quizName;
-            this.activityId = params.quizId ||`${this.idPrefix}quiz/${sw.insert_(quiz.quizName)}`;
+            this.activityId = params.quizId ||`${this.idPrefix}parent/quiz/${sw.insert_(quiz.quizName)}`;
             this.type = this.activityType.assessment;
             this.send= params.verbs.quiz[verb][0]
         break;
@@ -279,6 +283,7 @@ constructor(store){
         case 'mute':
         case 'unmute':
         case 'adjust':
+        case 'expand':
             this.activity=passedActivity;
             this.activityId=`${this.idPrefix}video/${passedActivity}`;
             this.type=this.activityType.video;
@@ -601,7 +606,6 @@ constructor(store){
             window.cpAPIEventEmitter.addEventListener('CPAPI_SLIDEENTER',e=>{
             this.slideVids=[];
             this.video=null;
-      
             //sw.typeText();
             this.quizhandler(e);
             if(sw.var('cpInQuizScope')==0){this.quizStarted = false};
@@ -670,6 +674,7 @@ constructor(store){
                 }
             });
             window.cpAPIEventEmitter.addEventListener('CPAPI_INTERACTIVEITEMSUBMIT',e=>{
+               
              if(params.consoleLog.eventListner)console.log(e);
                 xApiController.clickTime = new Date().getTime();
                 xApiController.totalDurationTime= sw.convertMilliSecondsToISO(Math.floor(xApiController.clickTime-xApiController.slideEnterTime));
@@ -955,7 +960,7 @@ class Learner{
             "id":this.url_emailParam,
             "name":this.url_emailParam.split('@')[0]
              };
-             sw.capSetVarValue('v_actorName',this.learner.name);
+             //sw.capSetVarValue('v_actorName',this.learner.name);
             callback();
     }
     else{
@@ -1143,7 +1148,9 @@ class VideoObject{
         
         //      this.getStartTime= this.video.currentTime; 
         // })
+    
         this.listener = $(`#btmControl${this.name}`).on('mousedown',e=>{
+
                 console.log($(e.t))
                 let playbarAction = ($(e.target)[0].innerText);
                 console.log(playbarAction)
@@ -1178,7 +1185,7 @@ class VideoObject{
                                 
                             let scrubTime = this.video.currentTime - this.getStartTime ;
                             let rawTime = scrubTime;
-                            (scrubTime <0) ? scrubTime=`scrubbed back ${Math.abs(scrubTime)}`:scrubTime=`scrubbed forward ${Math.abs(scrubTime)}`
+                            (scrubTime <0) ? scrubTime=`scrubbed back ${Math.floor(scrubTime)}`:scrubTime=`scrubbed forward ${Math.floor(scrubTime)}`
                             if(params.consoleLog.videoLog) console.log(scrubTime);
                             if(params.verbs.video.scrub){
                             xApiController.newTime=this.video.currentTime;
@@ -1212,6 +1219,7 @@ class VideoObject{
                         break;
                     case 'Full Screen':
                         if(params.consoleLog.videoLog)console.log('Full Screen');
+                        xApiController.defineStmt(this.name, 'expand')
                         break;
                 }
             })    
@@ -1255,6 +1263,8 @@ class Verbs{
         this.pauseId=sw.uriCheck(params.verbs.video.pause[2]) ||"http://id.tincanapi.com/verb/paused";
         this.watch=params.verbs.video.watch[1] || 'watched';
         this.watchId = sw.uriCheck(params.verbs.video.watch[2]) || 'http://activitystrea.ms/schema/1.0/watch';
+        this.expandId = sw.uriCheck(params.verbs.video.expand[2]) || `${sw.verbId}expnanded`;
+        this.expand = params.verbs.video.expand[1]  || 'exapanded to full screen'
         this.experience =params.verbs.experience[1]||'experienced';
         this.experienceId =sw.uriCheck(params.verbs.experience[2]) || 'http://adlnet.gov/expapi/verbs/experienced';
         this.press=params.verbs.pressButton[1] ||'pressed the button';
@@ -1627,7 +1637,14 @@ returnDefinition(type){
     return this[type];
 };
 };
+//ensure all CP files are loaded and then call the init feature in this document and elimnate play button;
+$(document).ready(function(){
 
+    setTimeout(()=>{
+        if(params.removePlayButton)cp.movie.play();
+        init();
+    },100);
+})
 
 
 
