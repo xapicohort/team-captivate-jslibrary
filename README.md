@@ -30,7 +30,6 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[The superWrapper (sw) object](#The-superWrapper-object)</br>
 
 
-
 # Overview
 This wrapper was designed to be a companion to an Adobe Captivate HTML publish package.  It is designed to work from a LMS where SCORM reporting is enabled, or any course even if SCORM is not enabled.  It will not interupt or change SCORM reporting but will also report xAPI to an LRS.
 
