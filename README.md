@@ -317,15 +317,15 @@ While creating this wrapper I found myself wanting to be able to interact quickl
 
 Here is a summary of those commands (these can be excecuted at anytime from the console) or from captivate javascript console when wrapper in insalled
 
-<span style="color:#228B22">sw.jump<span>(slideIndex) - Jump too slideIndex (slide 1 is 0 index)<br>
-<span style="color:#228B22">sw.next<span>()  - Advance to next slide<br>
-<span style="color:#228B22">sw.var<span>([captivate variable]) - example sw.var('cpInfoCurrentSlide') will return current slide index<br>
-<span style="color:#228B22">sw.reloadWebObject<span>()<br>
-<span style="color:#228B22">sw.convertMilliSecondsToISO<span>([milliseconds])<br> Will convert milliseconds to ISO8006 time foramt standard<br>
-<span style="color:#228B22">sw.uriCheck<span>([uri/iri]) ensures valid IRI will return IRI if valid or will return false if invalid <br>
-<span style="color:#228B22">sw.updateTitle<span>([stringValue]) change the title of the URL parge to passed string value <br>
-<span style="color:#228B22">sw.toggleGeture<span>([boolean -true/false])  Allows mobile gestures to be turned off by passing true or false on a slide by slide basis as needed<br>
-<span style="color:#228B22">sw.onLine<span>() - returns true or false based on navigator.onLine property 
+<span style="color:#228B22">sw.jump</span>(slideIndex) - Jump too slideIndex (slide 1 is 0 index)<br>
+<span style="color:#228B22">sw.next</span>()  - Advance to next slide<br>
+<span style="color:#228B22">sw.var</span>([captivate variable]) - example sw.var('cpInfoCurrentSlide') will return current slide index<br>
+<span style="color:#228B22">sw.reloadWebObject</span>()<br>
+<span style="color:#228B22">sw.convertMilliSecondsToISO</span>([milliseconds])<br> Will convert milliseconds to ISO8006 time foramt standard<br>
+<span style="color:#228B22">sw.uriCheck</span>([uri/iri]) ensures valid IRI will return IRI if valid or will return false if invalid <br>
+<span style="color:#228B22">sw.updateTitle</span>([stringValue]) change the title of the URL parge to passed string value <br>
+<span style="color:#228B22">sw.toggleGeture</span>([boolean -true/false])  Allows mobile gestures to be turned off by passing true or false on a slide by slide basis as needed<br>
+<span style="color:#228B22">sw.onLine</span>() - returns true or false based on navigator.onLine property 
 
 
 
