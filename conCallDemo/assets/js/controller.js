@@ -40,8 +40,8 @@ const params = {
     "consoleLog":{
                 statements:true,
                 quickLogVerbActivity:false,
-                quizLog:true,
-                quizArray:true,
+                quizLog:false,
+                quizArray:false,
                 videoLog:true,
                 eventListener:true,
                 lrs:false,
@@ -1416,7 +1416,7 @@ class Quiz{
                         this.possibleAnswers.push(value.trim())
                     }
                 } )
-                console.log(this.possibleAnswers)
+            
              
         break;
         case 'true-false':

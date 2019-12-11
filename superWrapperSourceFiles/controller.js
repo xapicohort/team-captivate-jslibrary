@@ -40,8 +40,8 @@ const params = {
     "consoleLog":{
                 statements:true,
                 quickLogVerbActivity:false,
-                quizLog:true,
-                quizArray:true,
+                quizLog:false,
+                quizArray:false,
                 videoLog:true,
                 eventListener:true,
                 lrs:false,
@@ -320,9 +320,7 @@ constructor(store){
         //only passes a type for quiz defnitions see class Defintions for all the types
      
         if(arguments[0] != null  && this.verbName !=='completed' ){
-            console.log(sw.insert_(type))
             let definitions = new Definitions();
-           
             return definitions.returnDefinition(sw.insert_(type));
         } else{
         return new TinCan.Activity({
@@ -1418,7 +1416,7 @@ class Quiz{
                         this.possibleAnswers.push(value.trim())
                     }
                 } )
-                console.log(this.possibleAnswers)
+            
              
         break;
         case 'true-false':
