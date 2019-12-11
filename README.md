@@ -64,8 +64,8 @@ Below are the different events that superWrapper on and their respective verb. E
 
 ## Navigation events
 
-|Verb       | When it triggers/sends to LRS | Additional Notes    |
-| --------- |:-----------------------------:| -------------------:|
+|Verb       | When it triggers/sends to LRS | Additional Properties   |
+| --------- |:-----------------------------:| -------------------------:|
 | access    |When course is launched        |    |
 | enter     |When user enters a slide       | |    
 | return    |When returning to a menu slide |                     |
@@ -78,7 +78,7 @@ Below are the different events that superWrapper on and their respective verb. E
 
 ## Event video events
 
-|Verb       | When it triggers/sends to LRS | Additional Notes    |
+|Verb       | When it triggers/sends to LRS | Additional Properties   |
 | --------- |:-----------------------------:| -------------------:|
 | play      |When video is played           |   |
 | pause     |When video is paused           | |    
@@ -90,13 +90,13 @@ Below are the different events that superWrapper on and their respective verb. E
 
 ## Quiz events
 
-|Verb       | When it triggers/sends to LRS | Additional Notes    |
+|Verb       | When it triggers/sends to LRS | Additional Properties    |
 | --------- |:-----------------------------:| -------------------:|
-| play      |When video is played           |   |
-| pause     |When video is paused           ||    
-| scrub     |When video is scrubbed         |                     |
-| watch     |When end of video is reached   |            |
-| mute      |When video is muted            |                     |
+| start     |When quiz is started           |   |
+| finish    |When quiz is finish           ||    
+| answered    |When question is answered         |                     |
+| reviewed   |When slide is visited in review mode |            |
+| skip     |When question           |                     |
 | unmute    |When video is unmutued         |                     |
 | adjust Vol|When volume is adjusted        |                     |
 

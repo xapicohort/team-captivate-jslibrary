@@ -320,9 +320,7 @@ constructor(store){
         //only passes a type for quiz defnitions see class Defintions for all the types
      
         if(arguments[0] != null  && this.verbName !=='completed' ){
-            console.log(sw.insert_(type))
             let definitions = new Definitions();
-           
             return definitions.returnDefinition(sw.insert_(type));
         } else{
         return new TinCan.Activity({
