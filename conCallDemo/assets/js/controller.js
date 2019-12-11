@@ -14,8 +14,8 @@ const params = {
                 open: [true,'opened','http://activitystrea.ms/schema/1.0/open'],
                 pressButton: [true,'pressed button' , 'http://future-learning.info/xAPI/verb/pressed'],
                 pressClickBox:[true, 'clicked box'],//same verb as above
-                focus:[false,'focused','http://id.tincanapi.com/verb/focused'],
-                unfocus:[false,'unfocused','http://id.tincanapi.com/verb/unfocused'],
+                focus:[true,'focused','http://id.tincanapi.com/verb/focused'],
+                unfocus:[true,'unfocused','http://id.tincanapi.com/verb/unfocused'],
                 experience:[true, 'experienced','http://adlnet.gov/expapi/verbs/experienced'],
             "quiz":
             {
@@ -23,7 +23,7 @@ const params = {
                 skip:[true,'skipped',"http://id.tincanapi.com/verb/skipped"],
                 answer:[true,'answered',"http://adlnet.gov/expapi/verbs/answered"],
                 review:[true,'reviewed','https://brindlewaye.com/xAPITerms/verbs/reviewed'],
-                finish:[true,'finished','${customVerbPrefix}/finished']
+                finish:[true,'completed quiz','http://activitystrea.ms/schema/1.0/complete']
             },
             "video":
             {
@@ -40,8 +40,8 @@ const params = {
     "consoleLog":{
                 statements:true,
                 quickLogVerbActivity:false,
-                quizLog:false,
-                quizArray:false,
+                quizLog:true,
+                quizArray:true,
                 videoLog:true,
                 eventListener:true,
                 lrs:false,
@@ -63,7 +63,7 @@ const params = {
         sandbox_secret:null,
         production_secret:null,
         production_key:null,
-        production_endpoint:null
+        production_endpoint:null  
     
     },  
     removePlayButton:true, 
@@ -73,9 +73,9 @@ const params = {
     remove_play_button_on_mobile:true,
     parentName:null,
     parentDescription:null,
-    baseId:'http://www.brianfloyd.me/superwrapper',//uses base URL and path by default but can be defined to custom URI
+    baseId:null,//uses base URL and path by default but can be defined to custom URI
     returnToLastSlideVisited:true,//TODO:write query to check last slide visited
-    version:'1.1.3'
+    version:'1.2.0'
 };
 
 if(params.consoleLog.version)console.log(`superWrapper ${params.version}`);
@@ -195,6 +195,7 @@ constructor(store){
             };  
         this.parentType= this.activityType.course;
         this.activity = passedActivity;
+        
         this.activityId = `${this.idPrefix}slide/${sw.insert_(this.activity)}`;
         this.categoryDescription = `This category contains ${this.categoryName} items`;
         this.videoId =this.activityId+"/video";
@@ -229,6 +230,9 @@ constructor(store){
             this.activity=`${quiz.question}`;
             this.activityId=`${this.idPrefix}quiz/${quiz.questionId}`;
             this.send = params.verbs.quiz[verb][0];
+            this.answerTime = new Date().getTime();
+            this.slideDurationTime = sw.convertMilliSecondsToISO(Math.abs(this.slideEnterTime - this.answerTime));
+           
         break;
         case  'review':
             this.type=this.activityType.question;
@@ -265,7 +269,7 @@ constructor(store){
             this.activity = params.quizName || quiz.quizName;
             this.activityId = params.quizId ||`${this.idPrefix}parent/quiz/${sw.insert_(quiz.quizName)}`;
             this.type = this.activityType.assessment;
-            this.send= params.verbs.quiz[verb][0]
+            this.send= params.verbs.quiz[verb][0];
         break;
         case 'return':
                 this.type = this.activityType.slide;
@@ -314,11 +318,12 @@ constructor(store){
     };
     createDefinition(type){
         //only passes a type for quiz defnitions see class Defintions for all the types
-      
+     
         if(arguments[0] != null  && this.verbName !=='completed' ){
-         
+            console.log(sw.insert_(type))
             let definitions = new Definitions();
-            return definitions.returnDefinition(type);
+           
+            return definitions.returnDefinition(sw.insert_(type));
         } else{
         return new TinCan.Activity({
             definition : {
@@ -427,6 +432,7 @@ constructor(store){
         createResult(quizType){
     
          if(this.quizFinalScore!==null){
+            
             this.quizFinalScore = null;
             return new TinCan.Result({
                 "score": {
@@ -453,8 +459,10 @@ constructor(store){
                     duration:this.totalProjectTime
             })
         }
-        else
+        else{
+          
         return new TinCan.Result({
+          
             "score": {
                 "scaled": (()=>{
                     if(quiz.correct) return Number(`.${(quiz.totalPoints/quiz.quizPossiblePoints).toFixed(2).split('.')[1]}`);
@@ -470,6 +478,7 @@ constructor(store){
               "duration": this.totalDurationTime,
               "response": quiz.selectedAnswer.toString()
         });
+    }
     };
     createStmt(){
         this.stmt = new TinCan.Statement({});
@@ -827,6 +836,9 @@ class SuperWrapper{
     next(){
         window.cpAPIInterface.next();
     };
+    play(){
+        cp.movie.play();
+    };
     var(value){
        return this.capGetVarValue(value)
     };
@@ -860,7 +872,7 @@ class SuperWrapper{
            
     };
     insert_(input){//helperfunction replace spaces with _underscore_
-
+      
         if(input.indexOf(' ')>0)
         return (input.indexOf(' ') >0) ? input.split(' ').join('_'):input;
         else
@@ -926,6 +938,16 @@ class SuperWrapper{
     onLine(){
         return navigator.onLine;
     }
+    parse(parseProperty){
+      
+        let keys = Object.keys(cp.model.data);
+        this.quizQuestions = [];
+        keys.map(key =>{
+            Object.keys(cp.model.data[key]).map(item=>{if(item==='qt')(this.quizQuestions.push(cp.model.data[key][parseProperty]))})
+        })
+        
+        return this.quizQuestions;
+      };
 };
 class Learner{
     constructor(){
@@ -1121,7 +1143,11 @@ class Learner{
             }
         }    
     });
-}};
+}
+ 
+
+
+};
 class VideoObject{
     constructor(vidObj){
         this.video =vidObj;
@@ -1293,6 +1319,7 @@ class Types{
 };
 class Quiz{
     constructor(data){
+        this.questions=(sw.parse('qt'));
         this.possibleAnswers = [];
         this.quizName=params.quizName || xApiController.parentName + " Quiz";
         this.quizId=sw.uriCheck(params.quizId) || xApiController.parentId;
@@ -1306,7 +1333,11 @@ class Quiz{
         this.quizTotalPoints = sw.var('cpQuizInfoTotalProjectPoints');
         this.question=null;
         this.questionTitle=null;
-        //this.questionNumber =data.cpdata.questionNumber+1||null;
+        if(data.cpData.hasOwnProperty('questionNumber')){
+            this.question =this.questions[data.cpData.questionNumber];
+            this.questionNumber =data.cpData.questionNumber;
+        
+        };
         let labels = $('[id^=si]');
         let textArray=[];
         labels.filter(label=>{
@@ -1325,20 +1356,20 @@ class Quiz{
        if(params.consoleLog.quizArray) console.log(textArray)
         this.correctAnswer = (()=>{
             let answers = data.cpData.correctAnswer;
-            if(answers.indexOf(';'))answers = answers.split(';')
+            if(answers.indexOf(';')>0)answers = answers.split(';')
             return answers;
         })();
         this.selectedAnswer =  (()=>{
             let answers = data.cpData.selectedAnswer;
-            if(answers.indexOf(';'))answers = answers.split(';')
+            if(answers.indexOf(';')>0)answers = answers.split(';')
             return answers;
              })();   
         this.correct = (()=>{return (JSON.stringify(this.correctAnswer)==JSON.stringify(this.selectedAnswer))?true:false})();
+       // console.log(this.questionType)
         switch (this.questionType){
         case 'long-fill-in':
         case 'fill-in':
                 this.questionTitle=textArray[0];
-                this.question= textArray[2];
                 this.correctAnswer = (()=>{
                     let answers = data.cpData.correctAnswer.toLowerCase();
                     if(answers.indexOf(':'))answers = answers.split(':')
@@ -1355,7 +1386,6 @@ class Quiz{
         break;
         case 'matching':
                 this.questionTitle = textArray[1];
-                this.question = textArray[2];
                 let parse = textArray.slice(3,textArray.indexOf('Submit '))
                 //TODO:rewrite result cleaner
                 let result = parse.filter(check=> (check.indexOf('A)')))
@@ -1365,34 +1395,48 @@ class Quiz{
                                   .filter(check=>check.indexOf('a.'))
                                   .filter(check=>check.indexOf('a)'))
                 let  numOfChoices =this.correctAnswer.toString().split(',').length;
+               
                 this.source=result.slice(result.length - numOfChoices,result.length);
                 this.target=result.slice(result.length-(numOfChoices+1)-numOfChoices,result.length-(numOfChoices+1))
         break;
         case 'choice':
-                this.question = textArray[2];
+                
                 this.questionTitle = textArray[1];
-                textArray.slice(3,textArray.length).map(value=>{
-                    if (value.split(' ')[0] ==='Incorrect'  || value.split(' ')[0]==='Correct'){this.possibleAnswers.pop()}else{
-                        this.possibleAnswers.push(value)
+                let startingIndex = textArray.indexOf('Multiple Choice ')+2;
+                textArray.slice(startingIndex,textArray.length).map(value=>{
+                    //console.log(value)
+                    if (value.split(' ')[0] ==='Incorrect'  ||
+                     value.split(' ')[0]==='Correct'||
+                     value.trim()==='Submit' ||
+                     value.trim()==='You must answer the question before continuing.'||
+                     value.split(' ')[0]==='Try')
+                     
+                     {
+                         ///noaction
+                   }
+                         else{
+                        this.possibleAnswers.push(value.trim())
                     }
                 } )
+                console.log(this.possibleAnswers)
+             
         break;
         case 'true-false':
-                this.question = textArray[2];
+          
                 this.questionTitle = textArray[1];
                 this.possibleAnswers=["true","false"];
         break;
         case 'sequencing':
-                this.question=textArray[2];
+                
                 this.questionTitle = textArray[1];
         break;
         case 'hotspot':
                 this.questionTitle = textArray[1];
-                this.question =textArray[2];
+             
         break;
         case 'likert':
                 this.questionTitle=textArray[1];
-                this.question = textArray[2];
+            
                 if(typeof cp.model.data[`${xApiController.quizIdentifier}`] !=='undefined')
                 this.possibleAnswers=cp.model.data[`${xApiController.quizIdentifier}`].rsv
         break;
@@ -1417,7 +1461,7 @@ constructor(){
             "interactionType": "choice",
             "correctResponsesPattern": [
                 (()=>{
-                    if(quiz.correctAnswer.length>1){
+                    if(quiz.correctAnswer.length>1  && quiz.questionType==='choicee'){
                         let correctAnswer='';
                         quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
                         correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
@@ -1448,7 +1492,7 @@ constructor(){
             },
             "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
             "interactionType": "true-false",
-            "correctResponsesPattern": quiz.correctAnswer,
+            "correctResponsesPattern": [quiz.correctAnswer],
             "choices":quiz.possibleAnswers
         },
         id:xApiController.activityId
@@ -1464,9 +1508,9 @@ constructor(){
                 (()=>{
                     if(quiz.correctAnswer.length>1){
                         let correctAnswer='';
-                        quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
+                        if(quiz.questioonType ==='long_fill_in'){quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
                         correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
-                        return correctAnswer;
+                        return correctAnswer;}
                     } else return quiz.correctAnswer;
                 })()
             ]
@@ -1484,9 +1528,9 @@ constructor(){
         (()=>{
             if(quiz.correctAnswer.length>1){
                 let correctAnswer='';
-                quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
+                if(quiz.questionType ==='fill_in'){quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
                 correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
-                return correctAnswer;
+                return correctAnswer;}
             } else return quiz.correctAnswer;
         })()
     ]
@@ -1552,9 +1596,9 @@ id:xApiController.activityId
                 (()=>{
                     if(quiz.correctAnswer.length>1){
                         let correctAnswer='';
-                        quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
+                       if(quiz.questionType ==='sequencing'){quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
                         correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
-                        return correctAnswer;
+                        return correctAnswer;}
                     } else return quiz.correctAnswer;
                 })()
             ,
@@ -1603,9 +1647,9 @@ id:xApiController.activityId
                 (()=>{
                     if(quiz.correctAnswer.length>1){
                         let correctAnswer='';
-                        quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
+                        if(quiz.questionType ==='hotspot'){quiz.correctAnswer.map((answer)=>{correctAnswer=correctAnswer+`${answer}[,]`});
                         correctAnswer = correctAnswer.substr(0,correctAnswer.length-3);
-                        return correctAnswer;
+                        return correctAnswer;}
                     } else return quiz.correctAnswer;
                 })()
             ,

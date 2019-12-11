@@ -326,6 +326,7 @@ Here is a summary of those commands (these can be excecuted at anytime from the 
 <span style="color:#228B22">sw.updateTitle</span>([stringValue]) change the title of the URL parge to passed string value <br>
 <span style="color:#228B22">sw.toggleGeture</span>([boolean -true/false])  Allows mobile gestures to be turned off by passing true or false on a slide by slide basis as needed<br>
 <span style="color:#228B22">sw.onLine</span>() - returns true or false based on navigator.onLine property 
+<span style="color:#228B22">sw.parse</span>('qt') -  parse the cp.data.model object and return the values of the passed key
 
 
 
@@ -487,6 +488,12 @@ Moving Forward I will continue to update this read.me with version update releas
 12/9 1.1.3  Removed the need  to put init(); in the captivate (eliminating former step 1 which has been now edited out of this readme).  It is now called in the wrapper itself after a 1 millisecond delay to ensure all other files have loaded prior.
 
 Added paramater parmams.removeMobilePlayButton when set to true the defaul white screen with the play button on mobile is exected.
+
+12/10 1.2 
+  -Found a way to always parse the question use cp.data.model[key].qt so quiz questions will always repoort correctly moving forward
+  -Redesigned answer logic, parses answers out of quiz more consistently
+  -Fixed result.duration so you know how many seconds into slide answer was provided, works for well for inifinite/multiple attempts
+
 
 
  
