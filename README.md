@@ -20,6 +20,7 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Parent](#Parent)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Quizzing](#Quizzing)</br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Video](#Event-video)</br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Extensions](#Extensions)
 
    #### Adobe resources that explain the API's used throughout
 
@@ -97,8 +98,7 @@ Below are the different events that superWrapper on and their respective verb. E
 | answered    |When question is answered         |                     |
 | reviewed   |When slide is visited in review mode |            |
 | skip     |When question           |                     |
-| unmute    |When video is unmutued         |                     |
-| adjust Vol|When volume is adjusted        |                     |
+
 
 
 ### Button and Clickbox Event
@@ -310,6 +310,27 @@ Scurbbed statements will contain  "http://id.tincanapi.com/extension/ending-poin
           }
         }
 ```
+#### Extensions
+
+superWrapper will pass a superwrapper extension modeled below
+
+```javascript
+
+  "http://superwrapper/extension/slide-info": {
+        "slidesSequenceToThisPoint": [
+          "slide",
+          "Title Slide",
+          "Multiple Choice 1"
+        ],
+        "slideIndex": 12,
+        "slideName": "Multiple Choice 1"
+      }
+    }
+
+```
+This provides the current Slide Index, and Slide Name, as well as an Array of slides in the order they were accessed by the suer leading up to the current slide.
+
+
 
 ## The superWrapper object
 

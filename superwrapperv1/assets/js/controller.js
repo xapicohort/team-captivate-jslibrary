@@ -1420,21 +1420,17 @@ class Quiz{
              
         break;
         case 'true-false':
-          
                 this.questionTitle = textArray[1];
                 this.possibleAnswers=["true","false"];
         break;
         case 'sequencing':
-                
                 this.questionTitle = textArray[1];
         break;
         case 'hotspot':
                 this.questionTitle = textArray[1];
-             
         break;
         case 'likert':
                 this.questionTitle=textArray[1];
-            
                 if(typeof cp.model.data[`${xApiController.quizIdentifier}`] !=='undefined')
                 this.possibleAnswers=cp.model.data[`${xApiController.quizIdentifier}`].rsv
         break;
