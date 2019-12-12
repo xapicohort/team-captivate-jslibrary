@@ -1676,7 +1676,7 @@ returnDefinition(type){
     return this[type];
 };
 };
-//ensure all CP files are loaded and then call the init feature in this document and elimnate play button;
+/*ensure all CP files are loaded and then call the init feature in this document and elimnate play button;
 $(document).ready(function(){
 
     setTimeout(()=>{
@@ -1684,7 +1684,7 @@ $(document).ready(function(){
         init();
     },100);
 })
-
+*/
 
 
 
