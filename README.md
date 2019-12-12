@@ -373,7 +373,7 @@ On the first slide of the project, select the slide and Actions for the slide.  
 
 ```init();```
 
- ![](http://www.brianfloyd.me/captivate-js-library/images/init.png  =100x)
+ ![](http://www.brianfloyd.me/captivate-js-library/images/init.png)
   
                         
 ### Step 2: 
@@ -393,6 +393,8 @@ Note:Included Captivate example file has these set up with our cohorts Watershed
 ```v_secret = [ set to your LRS Secret ]```
 
 ```v_endpoint = [set to your LRS endpoint]```
+
+![](http://www.brianfloyd.me/captivate-js-library/images/vars.png)
                     
  ### Step 3: 
  
