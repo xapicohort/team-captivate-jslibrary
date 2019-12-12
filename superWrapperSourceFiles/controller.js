@@ -160,7 +160,7 @@ constructor(store){
             else {
                 var username = params.lrsSettings.production_key ||sw.var('v_prodKey');
                 var password = params.lrsSettings.production_secret ||sw.var('v_prodSecret');
-                var endpoint = params.lrsSettings.proudction_endpoint || sw.var('v_prodEndpoint');
+                var endpoint = params.lrsSettings.production_endpoint || sw.var('v_prodEndpoint');
             }
             try {
                 
@@ -1677,13 +1677,13 @@ returnDefinition(type){
 };
 };
 //ensure all CP files are loaded and then call the init feature in this document and elimnate play button;
-$(document).ready(function(){
+// $(document).ready(function(){
 
-    setTimeout(()=>{
-        if(params.removePlayButton)cp.movie.play();
-        init();
-    },100);
-})
+//     setTimeout(()=>{
+//         if(params.removePlayButton)cp.movie.play();
+//         init();
+//     },100);
+// })
 
 
 

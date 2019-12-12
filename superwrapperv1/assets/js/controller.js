@@ -1561,7 +1561,7 @@ id:xApiController.activityId
                     }
                 }
                     answers.push(tempAnswer)})
-                return answers
+                return answers;
         })()
          ,
         "target": 
@@ -1673,13 +1673,13 @@ returnDefinition(type){
 };
 };
 //ensure all CP files are loaded and then call the init feature in this document and elimnate play button;
-$(document).ready(function(){
+// $(document).ready(function(){
 
-    setTimeout(()=>{
-        if(params.removePlayButton)cp.movie.play();
-        init();
-    },100);
-})
+//     setTimeout(()=>{
+//         if(params.removePlayButton)cp.movie.play();
+//         init();
+//     },100);
+// })
 
 
 

@@ -364,12 +364,19 @@ This repo lives on my personal server so any changes reflected here will be refl
 
 
 # Basic set-up and instructions:
-NOTE:SKIP STEP 1 INIT(); in walkthrouogh, new version no longer requires see 12/9 update at bottom for more deails.
+
 [YouTube - Step by Step Walkthrough](https://www.youtube.com/watch?v=erEzaY9_LCE&feature=youtu.be)
 
-                                               
+### Step 1:     
+
+On the first slide of the project, select the slide and Actions for the slide.  Set the On Enter property to execute javascsript, choose the script_window button and add the following:
+
+```init();```
+
+ ![](http://www.brianfloyd.me/captivate-js-library/images/init.png)
+  
                         
-### Step 1: 
+### Step 2: 
 
 In captivate you have to set up these user variables for your LRS:
 
@@ -387,7 +394,7 @@ Note:Included Captivate example file has these set up with our cohorts Watershed
 
 ```v_endpoint = [set to your LRS endpoint]```
                     
- ### Step 2: 
+ ### Step 3: 
  
  Publish the captivate ensuring the following:
  
@@ -396,7 +403,7 @@ Note:Included Captivate example file has these set up with our cohorts Watershed
                   -Scorm or no scorm is OK - but will change Step 6 slightly
                   -Do not zip files (uncheck publish setting)
                   
-### Step 3: 
+### Step 4: 
 
 Copy this repo (use clone button and downloaad zip for easiest access)
 
@@ -407,7 +414,7 @@ Copy this repo (use clone button and downloaad zip for easiest access)
                         
                 -In your captivate publish folder find the assets/js folder and paste the 3 files from above
                 
-### Step 4: 
+### Step 5: 
 
 We have to make changes to either index.html or index_scorm.html from captivate publish files
 
@@ -444,7 +451,7 @@ if(navigator.appName  !== "Microsoft Internet Explorer"){
 ********************/
 ```
               
-### Step 5 : 
+### Step 6 : 
 
         -Find a line similar to this in your index.hml (around line 120 but can vary) - 
         
@@ -465,7 +472,7 @@ if(navigator.appName  !== "Microsoft Internet Explorer"){
         ********************/
 ```           
              
-### Step 6:  
+### Step 7:  
 
 Your good to go!
             
@@ -505,10 +512,6 @@ Check out video available at [confernce call walk through](https://www.youtube.c
         -Fixed verb customization bug - Values where hard coded in not change to OOP
 
 Moving Forward I will continue to update this read.me with version update release info.  All feature requests, bugs and defects will now be reported using the 'issues' feature in this Git repo.  Please feel free to contribute any issues or feature requests you may have.
-
-12/9 1.1.3  Removed the need  to put init(); in the captivate (eliminating former step 1 which has been now edited out of this readme).  It is now called in the wrapper itself after a 1 millisecond delay to ensure all other files have loaded prior.
-
-Added paramater parmams.removeMobilePlayButton when set to true the defaul white screen with the play button on mobile is exected.
 
 12/10 1.2 
   -Found a way to always parse the question use cp.data.model[key].qt so quiz questions will always repoort correctly moving forward
