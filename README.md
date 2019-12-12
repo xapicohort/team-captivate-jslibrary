@@ -373,7 +373,7 @@ On the first slide of the project, select the slide and Actions for the slide.  
 
 ```init();```
 
- ![](http://www.brianfloyd.me/captivate-js-library/images/init.png)
+ ![](http://www.brianfloyd.me/captivate-js-library/images/init.png  =100)
   
                         
 ### Step 2: 
