@@ -1052,7 +1052,7 @@ var TinCan;
         },
 
         /**
-        @method setState
+        @method 
         @param {String} key Key to store into the state
         @param {String|Object} val Value to store into the state, objects will be stringified to JSON
         @param {Object} [cfg] Configuration for request
@@ -3091,6 +3091,7 @@ TinCan client library
         */
         retrieveState: function (key, cfg) {
             this.log("retrieveState");
+        
             var requestParams = {},
                 requestCfg = {},
                 requestResult,
@@ -3098,6 +3099,8 @@ TinCan client library
                 requestHeaders,
                 self = this;
 
+
+                
             requestHeaders = cfg.requestHeaders || {};
 
             requestParams = {
@@ -3342,6 +3345,7 @@ TinCan client library
         */
         saveState: function (key, val, cfg) {
             this.log("saveState");
+        
             var requestParams,
                 requestCfg,
                 requestHeaders;
